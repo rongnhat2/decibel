@@ -14520,6 +14520,9 @@ strong {
   padding: 15px;
   z-index: 9;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .app-menubar-tabs .app-tab-content {
   position: fixed;
@@ -14533,7 +14536,7 @@ strong {
 }
 .app-menubar-tabs .app-tab-content .app-navbar {
   width: 100%;
-  height: calc(100vh - 285px);
+  height: calc(100vh - 80px);
 }
 .app-menubar-tabs .app-tab-content .tab-content {
   height: auto;

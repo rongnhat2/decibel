@@ -11,8 +11,10 @@
   <meta name="robots" content="index, follow">
   <meta name="author" content="Decibel">
   <meta name="format-detection" content="telephone=no">
-  <meta name="keywords" content="Decibel, Onchain Trading, Aptos, Crypto Trading, Cross Collateral, Multi Collateral, Spot Trading, Perps, Vaults, Strategy">
-  <meta name="description" content="Decibel is a fully onchain trading engine built on Aptos. It combines spot, perps, and vault-based strategies into one platform with cross and multicollateral.">
+  <meta name="keywords"
+    content="Decibel, Onchain Trading, Aptos, Crypto Trading, Cross Collateral, Multi Collateral, Spot Trading, Perps, Vaults, Strategy">
+  <meta name="description"
+    content="Decibel is a fully onchain trading engine built on Aptos. It combines spot, perps, and vault-based strategies into one platform with cross and multicollateral.">
   <!-- end::Decibel Meta Basic -->
 
   <!-- begin::Decibel Meta Social -->
@@ -21,7 +23,8 @@
   <meta property="og:type" content="website">
   <meta property="og:locale" content="en_US">
   <meta property="og:title" content="Decibel | Onchain Trading Engine on Aptos">
-  <meta property="og:description" content="Decibel is a fully onchain trading engine built on Aptos. It combines spot, perps, and vault-based strategies into one platform with cross and multicollateral.">
+  <meta property="og:description"
+    content="Decibel is a fully onchain trading engine built on Aptos. It combines spot, perps, and vault-based strategies into one platform with cross and multicollateral.">
   <meta property="og:image" content="#">
   <!-- end::Decibel Meta Social -->
 
@@ -30,7 +33,8 @@
   <meta name="twitter:url" content="#">
   <meta name="twitter:creator" content="@Decibel">
   <meta name="twitter:title" content="Decibel | Onchain Trading Engine on Aptos">
-  <meta name="twitter:description" content="Decibel is a fully onchain trading engine built on Aptos. It combines spot, perps, and vault-based strategies into one platform with cross and multicollateral.">
+  <meta name="twitter:description"
+    content="Decibel is a fully onchain trading engine built on Aptos. It combines spot, perps, and vault-based strategies into one platform with cross and multicollateral.">
   <!-- end::Decibel Meta Twitter -->
 
   <!-- begin::Decibel Website Page Title -->
@@ -49,7 +53,8 @@
   <!-- begin::Decibel Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap"
+    rel="stylesheet">
   <!-- end::Decibel Google Fonts -->
 
   <!-- begin::Decibel Required Stylesheet -->
@@ -75,7 +80,8 @@
       <div class="row g-0 h-100">
         <div class="col-xl-8 col-lg-7 col-md-6">
           <div class="auth-frame p-0 position-relative overflow-hidden" style="background: none;">
-            <video autoplay loop muted playsinline class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" style="z-index:0;">
+            <video autoplay loop muted playsinline class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+              style="z-index:0;">
               <source src="assets/waves.mp4" type="video/mp4">
               Your browser does not support the video tag.
             </video>
@@ -90,23 +96,39 @@
             </div>
             <div class="text-center mb-5">
               <h5 class="mb-1">Welcome to Decibel</h5>
-              <p>Decibel is a fully onchain trading engine built on Aptos. It combines spot, perps, and vault-based strategies into one platform with cross and multicollateral.</p>
+              <p>Decibel is a fully onchain trading engine built on Aptos. It combines spot, perps, and vault-based
+                strategies into one platform with cross and multicollateral.</p>
             </div>
             <div id="login-form">
-              <div id="wallet-info" style="display:none">
-                <p>Địa chỉ ví: <span id="wallet-address"></span></p>
-                <p id="login-status"></p>
-                <p>Số dư: <span id="apt-balance">Loading...</span></p>
+              <div id="wallet-info" class="rounded-3 shadow-sm bg-light p-3 mb-3" style="display:none">
+                <div class="d-flex align-items-center text-muted small">
+                  <span class="me-2"><i class="fa-solid fa-wallet"></i></span>
+                  <span>Wallet Address:</span>
+                  <span id="wallet-address" class="ms-2 fw-semibold text-truncate" style="display:inline-block;"></span>
+                </div>
+                <!-- <div class="mb-2 d-flex align-items-center">
+                  <span class="me-2"><i class="fa-solid fa-bolt"></i></span>
+                  <span class="fw-semibold">Số dư:</span>
+                  <span id="apt-balance" class="ms-2 text-success">Loading...</span>
+                  <span class="ms-1 text-uppercase text-secondary" style="font-size:13px;">APT</span>
+                </div> -->
+                <div>
+                  <span id="login-status"></span>
+                </div>
               </div>
 
-              <button id="btn-login" style="display:none">Đăng nhập với Petra</button>
+              <button id="btn-login" style="display:none" class="btn btn-light waves-effect waves-light w-100">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNT6ujxt5xxf0BW_AQdf4ivpm1xzbfn-B8mg&s"
+                  alt="" class="me-1"> Verify Petra
+              </button>
 
               <div id="wallet-info" style="display:none">
                 <p>Địa chỉ: <span id="wallet-address"></span></p>
               </div>
 
               <button id="btn-connect" class="btn btn-light waves-effect waves-light w-100">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNT6ujxt5xxf0BW_AQdf4ivpm1xzbfn-B8mg&s" alt="" class="me-1"> Login with Petra
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNT6ujxt5xxf0BW_AQdf4ivpm1xzbfn-B8mg&s"
+                  alt="" class="me-1"> Login with Petra
               </button>
               <button id="btn-disconnect" style="display:none">Disconnect</button>
               <div id="overview"></div>

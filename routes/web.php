@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', 'Customer\DisplayController@index')->name('customer.index');
-Route::get('/login', 'Customer\DisplayController@login')->name('customer.login');
+Route::get('/', 'Customer\DisplayController@index')
+    ->name('customer.index')
+    ->middleware('auth.wallet');
 
- 
+Route::get('/login', 'Customer\DisplayController@login')
+    ->name('customer.login');

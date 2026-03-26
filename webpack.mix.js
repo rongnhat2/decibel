@@ -19,4 +19,5 @@ mix.js("resources/js/app.js", "public/js").postCss(
     ],
 );
 
-mix.js("resources/js/petra.js", "public/js");
+mix.js("resources/js/petra.js", "public/js")
+.js('resources/js/disconnect.js', 'public/js');

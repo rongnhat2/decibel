@@ -17,9 +17,10 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/nonce', 'Customer\WalletController@nonce')->name('customer.nonce');
 Route::post('/auth/verify', 'Customer\WalletController@verify')->name('customer.verify');
 // Routes cần auth
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/me', function (Request $r) {
-        $user = $r->user();
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('/me', function () {
+        $user = auth()->user();
         $wallet = $user->wallets()->first();
         return response()->json([
             'user_id' => $user->id,

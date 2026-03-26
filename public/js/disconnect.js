@@ -17149,9 +17149,9 @@ var __webpack_exports__ = {};
 // This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
 (() => {
 "use strict";
-/*!*******************************!*\
-  !*** ./resources/js/petra.js ***!
-  \*******************************/
+/*!************************************!*\
+  !*** ./resources/js/disconnect.js ***!
+  \************************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _aptos_labs_wallet_standard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @aptos-labs/wallet-standard */ "./node_modules/@aptos-labs/wallet-standard/dist/esm/index.mjs");
 function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
@@ -17159,244 +17159,121 @@ function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { 
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 
-
-// ===== STATE =====
-var petraWallet = null;
-var walletAddress = null;
-var publicKey = null;
-var authToken = localStorage.getItem("petra_token") || null;
-
-// ===== DOM =====
-var btnConnect = document.getElementById("btn-connect");
-var btnLogin = document.getElementById("btn-login");
-var walletInfo = document.getElementById("wallet-info");
-var walletAddrEl = document.getElementById("wallet-address");
-var loginStatus = document.getElementById("login-status");
-
-// ===== CSRF =====
-function csrf() {
-  return document.querySelector('meta[name="csrf-token"]').content;
-}
+var btnDisconnect = document.getElementById("btn-disconnect");
 
 // ===== INIT =====
-window.addEventListener("load", function () {
-  if (authToken) {
-    loginStatus.textContent = "✅ Đã đăng nhập";
-    btnLogin.style.display = "none";
-    var fullAddr = localStorage.getItem("petra_address") || "";
-    walletAddrEl.textContent = "".concat(fullAddr.slice(0, 6), "...").concat(fullAddr.slice(-6));
-    walletInfo.style.display = "block";
-    btnConnect.style.display = "none";
-  }
-});
-
-// ===== TÌM PETRA =====
-function findPetraWallet() {
-  return _findPetraWallet.apply(this, arguments);
-} // ===== CONNECT =====
-function _findPetraWallet() {
-  _findPetraWallet = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3() {
-    return _regenerator().w(function (_context3) {
-      while (1) switch (_context3.n) {
-        case 0:
-          return _context3.a(2, new Promise(function (resolve) {
-            var result = (0,_aptos_labs_wallet_standard__WEBPACK_IMPORTED_MODULE_0__.getAptosWallets)();
-            var wallets = result.aptosWallets;
-            var on = result.on;
-            console.log("wallets:", wallets);
-            var found = wallets.find(function (w) {
-              return w.name === "Petra";
-            });
-            if (found) return resolve(found);
-            var timer = setTimeout(function () {
-              return resolve(null);
-            }, 5000);
-            on("register", function (w) {
-              if (w.name === "Petra") {
-                clearTimeout(timer);
-                resolve(w);
-              }
-            });
-          }));
-      }
-    }, _callee3);
-  }));
-  return _findPetraWallet.apply(this, arguments);
-}
-btnConnect.addEventListener("click", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
-  var _ref2, _res$accounts$, _res$accounts, _res$address$toString, _res$address, _res$args, _res$publicKey$toStri, _res$publicKey, _res$args2, res, account, fullAddr, _t;
+window.addEventListener("load", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
+  var fullAddr, apt;
   return _regenerator().w(function (_context) {
-    while (1) switch (_context.p = _context.n) {
+    while (1) switch (_context.n) {
       case 0:
-        btnConnect.textContent = "Finding Petra Wallet...";
-        btnConnect.disabled = true;
+        // Load balance
+        fullAddr = localStorage.getItem("petra_address");
         _context.n = 1;
-        return findPetraWallet();
+        return getAptBalance(fullAddr);
       case 1:
-        petraWallet = _context.v;
-        btnConnect.textContent = "Connecting to Petra Wallet";
-        btnConnect.disabled = false;
-        if (petraWallet) {
-          _context.n = 2;
-          break;
-        }
-        alert("Petra Wallet not found! Please install the extension and refresh the page.");
-        window.open("https://petra.app/", "_blank");
-        return _context.a(2);
+        apt = _context.v;
+        document.getElementById("wallet-address").textContent = "".concat(fullAddr.slice(0, 6), "...").concat(fullAddr.slice(-6));
+        document.getElementById("wallet-address-detail").textContent = "".concat(fullAddr.slice(0, 6), "...").concat(fullAddr.slice(-6));
+        document.getElementById("apt-balance").textContent = apt + " APT";
       case 2:
-        _context.p = 2;
-        _context.n = 3;
-        return petraWallet.features["aptos:connect"].connect();
-      case 3:
-        res = _context.v;
-        console.log("Connect res:", res);
-        account = (_ref2 = (_res$accounts$ = res === null || res === void 0 || (_res$accounts = res.accounts) === null || _res$accounts === void 0 ? void 0 : _res$accounts[0]) !== null && _res$accounts$ !== void 0 ? _res$accounts$ : res === null || res === void 0 ? void 0 : res[0]) !== null && _ref2 !== void 0 ? _ref2 : res;
-        walletAddress = (_res$address$toString = res === null || res === void 0 || (_res$address = res.address) === null || _res$address === void 0 ? void 0 : _res$address.toString()) !== null && _res$address$toString !== void 0 ? _res$address$toString : res === null || res === void 0 || (_res$args = res.args) === null || _res$args === void 0 || (_res$args = _res$args.address) === null || _res$args === void 0 ? void 0 : _res$args.toString();
-        publicKey = (_res$publicKey$toStri = res === null || res === void 0 || (_res$publicKey = res.publicKey) === null || _res$publicKey === void 0 ? void 0 : _res$publicKey.toString()) !== null && _res$publicKey$toStri !== void 0 ? _res$publicKey$toStri : res === null || res === void 0 || (_res$args2 = res.args) === null || _res$args2 === void 0 || (_res$args2 = _res$args2.publicKey) === null || _res$args2 === void 0 ? void 0 : _res$args2.toString();
-        console.log("✅ Address:", walletAddress);
-        console.log("✅ PublicKey:", publicKey);
-        localStorage.setItem("petra_address", walletAddress);
-        fullAddr = walletAddress;
-        walletAddrEl.textContent = "".concat(fullAddr.slice(0, 6), "...").concat(fullAddr.slice(-6));
-        walletInfo.style.display = "block";
-        btnConnect.style.display = "none";
-        btnLogin.style.display = "inline-block"; // hiện nút login
-        _context.n = 5;
-        break;
-      case 4:
-        _context.p = 4;
-        _t = _context.v;
-        console.error(_t);
-        alert("Lỗi: " + (_t.message || JSON.stringify(_t)));
-      case 5:
         return _context.a(2);
     }
-  }, _callee, null, [[2, 4]]);
+  }, _callee);
 })));
-
-// ===== LOGIN =====
-btnLogin.addEventListener("click", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
-  var _ref4, _signResult$signature, _signResult$args, nonceRes, _yield$nonceRes$json, nonce, signResult, rawSig, signature, verifyRes, data, _t2;
+btnDisconnect.addEventListener("click", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
+  var _petra$features$aptos, _getAptosWallets, aptosWallets, petra, _t;
   return _regenerator().w(function (_context2) {
     while (1) switch (_context2.p = _context2.n) {
       case 0:
-        if (walletAddress) {
-          _context2.n = 1;
-          break;
-        }
-        return _context2.a(2, alert("Chưa connect ví!"));
+        _context2.p = 0;
+        _getAptosWallets = (0,_aptos_labs_wallet_standard__WEBPACK_IMPORTED_MODULE_0__.getAptosWallets)(), aptosWallets = _getAptosWallets.aptosWallets;
+        petra = aptosWallets === null || aptosWallets === void 0 ? void 0 : aptosWallets.find(function (w) {
+          return w.name === 'Petra';
+        });
+        _context2.n = 1;
+        return petra === null || petra === void 0 || (_petra$features$aptos = petra.features["aptos:disconnect"]) === null || _petra$features$aptos === void 0 ? void 0 : _petra$features$aptos.disconnect();
       case 1:
-        _context2.p = 1;
-        loginStatus.textContent = "⏳ Verifying...";
-
-        // Bước 0: Lấy CSRF cookie từ Sanctum TRƯỚC
-        _context2.n = 2;
-        return fetch("/sanctum/csrf-cookie", {
-          method: "GET",
-          credentials: "include"
-        });
-      case 2:
         _context2.n = 3;
-        return fetch("/api/auth/nonce", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            // ← thêm
-            "X-CSRF-TOKEN": csrf()
-          },
-          body: JSON.stringify({
-            address: walletAddress
-          })
-        });
-      case 3:
-        nonceRes = _context2.v;
-        if (nonceRes.ok) {
-          _context2.n = 4;
-          break;
-        }
-        throw new Error("Không lấy được nonce");
-      case 4:
-        _context2.n = 5;
-        return nonceRes.json();
-      case 5:
-        _yield$nonceRes$json = _context2.v;
-        nonce = _yield$nonceRes$json.nonce;
-        _context2.n = 6;
-        return petraWallet.features["aptos:signMessage"].signMessage({
-          message: nonce,
-          nonce: nonce
-        });
-      case 6:
-        signResult = _context2.v;
-        console.log("signResult full:", signResult);
-
-        // Lấy signature đúng — serialize thành string
-        rawSig = (_ref4 = (_signResult$signature = signResult === null || signResult === void 0 ? void 0 : signResult.signature) !== null && _signResult$signature !== void 0 ? _signResult$signature : signResult === null || signResult === void 0 || (_signResult$args = signResult.args) === null || _signResult$args === void 0 ? void 0 : _signResult$args.signature) !== null && _ref4 !== void 0 ? _ref4 : signResult === null || signResult === void 0 ? void 0 : signResult.args;
-        signature = typeof rawSig === "string" ? rawSig : JSON.stringify(rawSig);
-        console.log("signature string:", signature);
-        console.log("signature:", signature);
-        _context2.n = 7;
-        return fetch("/api/auth/verify", {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            "X-CSRF-TOKEN": csrf()
-          },
-          body: JSON.stringify({
-            address: walletAddress,
-            public_key: publicKey,
-            signature: signature,
-            // ← dùng biến này
-            message: nonce
-          })
-        });
-      case 7:
-        verifyRes = _context2.v;
-        _context2.n = 8;
-        return verifyRes.json();
-      case 8:
-        data = _context2.v;
-        if (verifyRes.ok) {
-          _context2.n = 9;
-          break;
-        }
-        throw new Error(data.error || "Verification failed");
-      case 9:
-        authToken = data.token;
-        localStorage.setItem("petra_token", authToken);
-        localStorage.setItem("petra_user_id", data.user_id);
-        localStorage.setItem("petra_address", data.address);
-        loginStatus.textContent = "✅ Login successful!";
-        btnLogin.style.display = "none";
-
-        // Lưu JWT vào cookie để Laravel middleware đọc
-        document.cookie = "jwt_token=".concat(authToken, "; path=/; max-age=").concat(60 * 60 * 24 * 7);
-        console.log("authToken:", authToken);
-        console.log("document.cookie:", document.cookie);
-        // Redirect về trang chủ
-        window.location.href = '/';
-        _context2.n = 11;
         break;
-      case 10:
-        _context2.p = 10;
-        _t2 = _context2.v;
-        console.error(_t2);
-        loginStatus.textContent = "❌ " + _t2.message;
-      case 11:
+      case 2:
+        _context2.p = 2;
+        _t = _context2.v;
+      case 3:
+        // Xoá localStorage
+        localStorage.removeItem("petra_token");
+        localStorage.removeItem("petra_user_id");
+        localStorage.removeItem("petra_address");
+
+        // Xoá cookie jwt_token
+        document.cookie = "jwt_token=; path=/; max-age=0";
+
+        // Redirect về login
+        window.location.href = "/login";
+      case 4:
         return _context2.a(2);
     }
-  }, _callee2, null, [[1, 10]]);
+  }, _callee2, null, [[0, 2]]);
 })));
-window.addEventListener('load', function () {
-  var token = localStorage.getItem('petra_token');
-  if (token) {
-    window.location.href = '/';
-    return;
-  }
-});
+// ===== LẤY APT BALANCE =====
+function getAptBalance(_x) {
+  return _getAptBalance.apply(this, arguments);
+}
+function _getAptBalance() {
+  _getAptBalance = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(address) {
+    var _balData$, url, res, data, balRes, balData, octas, _t2;
+    return _regenerator().w(function (_context3) {
+      while (1) switch (_context3.p = _context3.n) {
+        case 0:
+          _context3.p = 0;
+          // Thử cách mới — dùng account balance API
+          url = "https://fullnode.testnet.aptoslabs.com/v1/accounts/".concat(address);
+          _context3.n = 1;
+          return fetch(url);
+        case 1:
+          res = _context3.v;
+          _context3.n = 2;
+          return res.json();
+        case 2:
+          data = _context3.v;
+          console.log("Account data:", data);
+          if (!(res.status === 404)) {
+            _context3.n = 3;
+            break;
+          }
+          return _context3.a(2, "0.0000");
+        case 3:
+          _context3.n = 4;
+          return fetch("https://fullnode.testnet.aptoslabs.com/v1/view", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              "function": "0x1::coin::balance",
+              type_arguments: ["0x1::aptos_coin::AptosCoin"],
+              arguments: [address]
+            })
+          });
+        case 4:
+          balRes = _context3.v;
+          _context3.n = 5;
+          return balRes.json();
+        case 5:
+          balData = _context3.v;
+          console.log("Balance data:", balData);
+          octas = (_balData$ = balData === null || balData === void 0 ? void 0 : balData[0]) !== null && _balData$ !== void 0 ? _balData$ : 0;
+          return _context3.a(2, (octas / 1e8).toFixed(4));
+        case 6:
+          _context3.p = 6;
+          _t2 = _context3.v;
+          console.error("Balance error:", _t2);
+          return _context3.a(2, "0.0000");
+      }
+    }, _callee3, null, [[0, 6]]);
+  }));
+  return _getAptBalance.apply(this, arguments);
+}
 })();
 
 /******/ })()

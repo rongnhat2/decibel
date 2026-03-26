@@ -8,7 +8,6 @@ let authToken = localStorage.getItem("petra_token") || null;
 
 // ===== DOM =====
 const btnConnect = document.getElementById("btn-connect");
-const btnDisconnect = document.getElementById("btn-disconnect");
 const btnLogin = document.getElementById("btn-login");
 const walletInfo = document.getElementById("wallet-info");
 const walletAddrEl = document.getElementById("wallet-address");
@@ -24,10 +23,10 @@ window.addEventListener("load", () => {
     if (authToken) {
         loginStatus.textContent = "✅ Đã đăng nhập";
         btnLogin.style.display = "none";
-        walletAddrEl.textContent = localStorage.getItem("petra_address") || "";
+        const fullAddr = localStorage.getItem("petra_address") || "";
+        walletAddrEl.textContent = `${fullAddr.slice(0, 6)}...${fullAddr.slice(-6)}`; 
         walletInfo.style.display = "block";
-        btnConnect.style.display = "none";
-        btnDisconnect.style.display = "inline-block";
+        btnConnect.style.display = "none"; 
     }
 });
 
@@ -55,16 +54,16 @@ async function findPetraWallet() {
 
 // ===== CONNECT =====
 btnConnect.addEventListener("click", async () => {
-    btnConnect.textContent = "Đang tìm...";
+    btnConnect.textContent = "Finding Petra Wallet...";
     btnConnect.disabled = true;
 
     petraWallet = await findPetraWallet();
 
-    btnConnect.textContent = "Connect Petra Wallet";
+    btnConnect.textContent = "Connecting to Petra Wallet";
     btnConnect.disabled = false;
 
     if (!petraWallet) {
-        alert("Không tìm thấy Petra! Cài extension rồi F5 lại.");
+        alert("Petra Wallet not found! Please install the extension and refresh the page.");
         window.open("https://petra.app/", "_blank");
         return;
     }
@@ -85,11 +84,11 @@ btnConnect.addEventListener("click", async () => {
 
         localStorage.setItem("petra_address", walletAddress);
 
-        walletAddrEl.textContent = walletAddress;
+        const fullAddr = walletAddress;
+        walletAddrEl.textContent = `${fullAddr.slice(0, 6)}...${fullAddr.slice(-6)}`; 
         walletInfo.style.display = "block";
         btnConnect.style.display = "none";
         btnLogin.style.display = "inline-block"; // hiện nút login
-        btnDisconnect.style.display = "inline-block";
     } catch (err) {
         console.error(err);
         alert("Lỗi: " + (err.message || JSON.stringify(err)));
@@ -101,7 +100,7 @@ btnLogin.addEventListener("click", async () => {
     if (!walletAddress) return alert("Chưa connect ví!");
 
     try {
-        loginStatus.textContent = "⏳ Đang xác thực...";
+        loginStatus.textContent = "⏳ Verifying...";
 
         // Bước 0: Lấy CSRF cookie từ Sanctum TRƯỚC
         await fetch("/sanctum/csrf-cookie", {
@@ -162,73 +161,32 @@ btnLogin.addEventListener("click", async () => {
         });
 
         const data = await verifyRes.json();
-        if (!verifyRes.ok) throw new Error(data.error || "Xác thực thất bại");
+        if (!verifyRes.ok) throw new Error(data.error || "Verification failed");
 
         authToken = data.token;
         localStorage.setItem("petra_token", authToken);
         localStorage.setItem("petra_user_id", data.user_id);
         localStorage.setItem("petra_address", data.address);
-
-        loginStatus.textContent = "✅ Đăng nhập thành công!";
+        loginStatus.textContent = "✅ Login successful!";
         btnLogin.style.display = "none";
 
-        // Load balance
-        const apt = await getAptBalance(walletAddress);
-        document.getElementById("apt-balance").textContent = apt + " APT";
+
+        // Lưu JWT vào cookie để Laravel middleware đọc
+        document.cookie = `jwt_token=${authToken}; path=/; max-age=${60 * 60 * 24 * 7}`;
+        console.log("authToken:", authToken);
+        console.log("document.cookie:", document.cookie);
+        // Redirect về trang chủ
+        window.location.href = '/';
+        
     } catch (err) {
         console.error(err);
         loginStatus.textContent = "❌ " + err.message;
     }
 });
-// ===== LẤY APT BALANCE =====
-async function getAptBalance(address) {
-    try {
-        // Thử cách mới — dùng account balance API
-        const url = `https://fullnode.testnet.aptoslabs.com/v1/accounts/${address}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        console.log("Account data:", data);
-
-        if (res.status === 404) return "0.0000";
-
-        // Thử lấy qua view function
-        const balRes = await fetch(
-            "https://fullnode.testnet.aptoslabs.com/v1/view",
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    function: "0x1::coin::balance",
-                    type_arguments: ["0x1::aptos_coin::AptosCoin"],
-                    arguments: [address],
-                }),
-            },
-        );
-
-        const balData = await balRes.json();
-        console.log("Balance data:", balData);
-
-        const octas = balData?.[0] ?? 0;
-        return (octas / 1e8).toFixed(4);
-    } catch (err) {
-        console.error("Balance error:", err);
-        return "0.0000";
+window.addEventListener('load', () => {
+    const token = localStorage.getItem('petra_token');
+    if (token) {
+        window.location.href = '/';
+        return;
     }
-}
-// ===== DISCONNECT =====
-btnDisconnect.addEventListener("click", async () => {
-    try {
-        await petraWallet?.features["aptos:disconnect"]?.disconnect();
-    } catch (_) {}
-
-    petraWallet = walletAddress = publicKey = authToken = null;
-    localStorage.removeItem("petra_token");
-    localStorage.removeItem("petra_user_id");
-    localStorage.removeItem("petra_address");
-
-    walletInfo.style.display = "none";
-    btnConnect.style.display = "inline-block";
-    btnLogin.style.display = "none";
-    btnDisconnect.style.display = "none";
-    loginStatus.textContent = "";
 });

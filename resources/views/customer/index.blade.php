@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <base href="../">
+
+    <!-- begin::Decibel Meta Basic -->
+    <meta charset="utf-8">
+    <meta name="theme-color" content="#5955D1">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Decibel">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="keywords"
+        content="Decibel, Onchain Trading, Aptos, Crypto Trading, Cross Collateral, Multi Collateral, Spot Trading, Perps, Vaults, Strategy">
+    <meta name="description"
+        content="Decibel is a fully onchain trading engine built on Aptos. It combines spot, perps, and vault-based strategies into one platform with cross and multicollateral.">
+    <!-- end::Decibel Meta Basic -->
+
+    <!-- begin::Decibel Meta Social -->
+    <meta property="og:url" content="#">
+    <meta property="og:site_name" content="Decibel | Onchain Trading Engine">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="Decibel | Onchain Trading Engine on Aptos">
+    <meta property="og:description"
+        content="Decibel is a fully onchain trading engine built on Aptos. It combines spot, perps, and vault-based strategies into one platform with cross and multicollateral.">
+    <meta property="og:image" content="#">
+    <!-- end::Decibel Meta Social -->
+
+    <!-- begin::Decibel Meta Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:url" content="#">
+    <meta name="twitter:creator" content="@Decibel">
+    <meta name="twitter:title" content="Decibel | Onchain Trading Engine on Aptos">
+    <meta name="twitter:description"
+        content="Decibel is a fully onchain trading engine built on Aptos. It combines spot, perps, and vault-based strategies into one platform with cross and multicollateral.">
+    <!-- end::Decibel Meta Twitter -->
+
+    <!-- begin::Decibel Website Page Title -->
+    <title>Decibel | Onchain Trading Engine on Aptos</title>
+    <!-- end::Decibel Website Page Title -->
+
+    <!-- begin::Decibel Mobile Specific -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- end::Decibel Mobile Specific -->
+
+    <!-- begin::Decibel Favicon Tags -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- end::Decibel Favicon Tags -->
+
+    <!-- begin::Decibel Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap"
+        rel="stylesheet">
+    <!-- end::Decibel Google Fonts -->
+
+    <!-- begin::Decibel Required Stylesheet -->
+    <link rel="stylesheet" href="assets/libs/flaticon/css/all/all.css">
+    <link rel="stylesheet" href="assets/libs/lucide/lucide.css">
+    <link rel="stylesheet" href="assets/libs/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="assets/libs/simplebar/simplebar.css">
+    <link rel="stylesheet" href="assets/libs/node-waves/waves.css">
+    <link rel="stylesheet" href="assets/libs/bootstrap-select/css/bootstrap-select.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- end::Decibel Required Stylesheet -->
+
+    <!-- begin::Decibel CSS Stylesheet -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <!-- end::Decibel CSS Stylesheet -->
+
+    <!-- begin::NexLink Required Stylesheet -->
+    <link rel="stylesheet" href="assets/libs/flaticon/css/all/all.css">
+    <link rel="stylesheet" href="assets/libs/lucide/lucide.css">
+    <link rel="stylesheet" href="assets/libs/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="assets/libs/simplebar/simplebar.css">
+    <link rel="stylesheet" href="assets/libs/node-waves/waves.css">
+    <link rel="stylesheet" href="assets/libs/bootstrap-select/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="assets/libs/flatpickr/flatpickr.min.css">
+    <!-- end::NexLink Required Stylesheet -->
+
+    <!-- begin::NexLink CSS Stylesheet -->
+    <link rel="stylesheet" href="assets/libs/datatables/datatables.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <!-- end::NexLink CSS Stylesheet -->
+
+
+
+</head>
+
+<body>
+    <div class="page-layout">
+
+        <!-- begin::NexLink Page Header -->
+        <header class="app-header">
+            <div class="app-header-inner">
+
+                <div class="app-header-end">
+                    <div class="px-lg-4 px-2 ps-0 d-flex align-items-center">
+                        <a href="javascript:void(0);" class="theme-btn">
+                            <svg class="icon-light" width="20" height="21" viewBox="0 0 20 21" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M14.1663 10.5002C14.1663 12.8013 12.3008 14.6668 9.99967 14.6668C7.69849 14.6668 5.83301 12.8013 5.83301 10.5002C5.83301 8.19898 7.69849 6.3335 9.99967 6.3335C12.3008 6.3335 14.1663 8.19898 14.1663 10.5002Z"
+                                    fill="var(--bs-heading-color)" />
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M10.0003 1.5415C10.3455 1.5415 10.6253 1.82133 10.6253 2.1665V3.83317C10.6253 4.17834 10.3455 4.45817 10.0003 4.45817C9.65516 4.45817 9.37532 4.17834 9.37532 3.83317V2.1665C9.37532 1.82133 9.65516 1.5415 10.0003 1.5415ZM1.04199 10.4998C1.04199 10.1547 1.32182 9.87484 1.66699 9.87484H3.33366C3.67883 9.87484 3.95866 10.1547 3.95866 10.4998C3.95866 10.845 3.67883 11.1248 3.33366 11.1248H1.66699C1.32182 11.1248 1.04199 10.845 1.04199 10.4998ZM16.042 10.4998C16.042 10.1547 16.3218 9.87484 16.667 9.87484H18.3337C18.6788 9.87484 18.9587 10.1547 18.9587 10.4998C18.9587 10.845 18.6788 11.1248 18.3337 11.1248H16.667C16.3218 11.1248 16.042 10.845 16.042 10.4998ZM10.0003 16.5415C10.3455 16.5415 10.6253 16.8213 10.6253 17.1665V18.8332C10.6253 19.1783 10.3455 19.4582 10.0003 19.4582C9.65516 19.4582 9.37532 19.1783 9.37532 18.8332V17.1665C9.37532 16.8213 9.65516 16.5415 10.0003 16.5415Z"
+                                    fill="var(--bs-heading-color)" />
+                                <g opacity="0.5">
+                                    <path
+                                        d="M3.05729 3.59633C3.29021 3.34158 3.68554 3.32389 3.94029 3.55681L5.79198 5.24979C6.04673 5.48271 6.06442 5.87804 5.8315 6.13279C5.59858 6.38754 5.20325 6.40524 4.94851 6.17232L3.09683 4.47933C2.84208 4.24642 2.82438 3.85108 3.05729 3.59633Z"
+                                        fill="var(--bs-heading-color)" />
+                                    <path
+                                        d="M16.9428 3.59633C17.1758 3.85108 17.1581 4.24642 16.9033 4.47933L15.0516 6.17232C14.7968 6.40524 14.4015 6.38754 14.1686 6.13279C13.9357 5.87804 13.9534 5.48271 14.2082 5.24979L16.0598 3.55681C16.3146 3.32389 16.7099 3.34158 16.9428 3.59633Z"
+                                        fill="var(--bs-heading-color)" />
+                                    <path
+                                        d="M14.188 14.6874C14.4321 14.4433 14.8277 14.4434 15.0718 14.6875L16.9235 16.5394C17.1676 16.7835 17.1676 17.1792 16.9235 17.4232C16.6794 17.6673 16.2837 17.6673 16.0396 17.4232L14.1879 15.5713C13.9438 15.3272 13.9439 14.9315 14.188 14.6874Z"
+                                        fill="var(--bs-heading-color)" />
+                                    <path
+                                        d="M5.81235 14.6875C6.05643 14.9315 6.05643 15.3272 5.81235 15.5713L3.9605 17.4231C3.71642 17.6672 3.32069 17.6672 3.07662 17.4231C2.83253 17.179 2.83253 16.7834 3.07662 16.5393L4.92847 14.6874C5.17254 14.4434 5.56828 14.4434 5.81235 14.6875Z"
+                                        fill="var(--bs-heading-color)" />
+                                </g>
+                            </svg>
+                            <div class="theme-toggle"></div>
+                            <svg class="icon-dark" width="20" height="21" viewBox="0 0 20 21" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M16.5835 2.4225C16.4495 2.08117 15.9681 2.08117 15.834 2.4225L15.4754 3.33523C15.4345 3.43944 15.3523 3.52193 15.2485 3.56303L14.339 3.92301C13.999 4.05762 13.999 4.54067 14.339 4.67529L15.2485 5.03527C15.3523 5.07637 15.4345 5.15886 15.4754 5.26306L15.834 6.1758C15.9681 6.51712 16.4495 6.51712 16.5835 6.17581L16.9422 5.26306C16.9831 5.15886 17.0653 5.07637 17.1691 5.03527L18.0785 4.67529C18.4186 4.54067 18.4186 4.05762 18.0785 3.92301L17.1691 3.56303C17.0653 3.52193 16.9831 3.43944 16.9422 3.33523L16.5835 2.4225Z"
+                                    fill="var(--bs-heading-color)" />
+                                <path
+                                    d="M13.3609 7.27454C13.2267 6.93323 12.7455 6.93323 12.6113 7.27454L12.4806 7.60733C12.4396 7.71154 12.3575 7.79403 12.2536 7.83513L11.9221 7.96638C11.582 8.10099 11.582 8.58404 11.9221 8.71866L12.2536 8.8499C12.3575 8.89098 12.4396 8.97348 12.4806 9.07773L12.6113 9.41048C12.7455 9.75182 13.2267 9.75182 13.3609 9.41048L13.4916 9.07773C13.5326 8.97348 13.6147 8.89098 13.7186 8.8499L14.0501 8.71866C14.3902 8.58404 14.3902 8.10099 14.0501 7.96638L13.7186 7.83513C13.6147 7.79403 13.5326 7.71154 13.4916 7.60733L13.3609 7.27454Z"
+                                    fill="var(--bs-heading-color)" />
+                                <path opacity="0.5"
+                                    d="M10.0003 18.8332C14.6027 18.8332 18.3337 15.1022 18.3337 10.4998C18.3337 10.1143 17.7557 10.0505 17.5563 10.3805C16.6077 11.9503 14.8849 12.9998 12.917 12.9998C9.92541 12.9998 7.50032 10.5748 7.50032 7.58317C7.50032 5.61521 8.54982 3.89238 10.1197 2.9438C10.4497 2.7444 10.3859 2.1665 10.0003 2.1665C5.39795 2.1665 1.66699 5.89746 1.66699 10.4998C1.66699 15.1022 5.39795 18.8332 10.0003 18.8332Z"
+                                    fill="var(--bs-heading-color)" />
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="vr my-3"></div>
+                    <div class="vr my-3"></div>
+                    <div class="dropdown text-end ms-sm-3 ms-2 ms-lg-4">
+                        <a href="#" class="d-flex align-items-center py-2" data-bs-toggle="dropdown"
+                            data-bs-auto-close="outside" aria-expanded="true">
+                            <div class="text-end me-2 d-none d-lg-inline-block">
+                                <div class="fw-bold text-dark" id="wallet-address"></div>
+                                <small class="text-body d-block lh-sm">
+                                    <i class="fi fi-rr-angle-down text-3xs me-1"></i> Manager
+                                </small>
+                            </div>
+                            <div class="avatar avatar-sm rounded-circle avatar-status-success">
+                                <img src="assets/images/avatar/avatar1.webp" alt="">
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end w-225px mt-1">
+                            <li class="d-flex align-items-center p-2">
+                                <div class="avatar avatar-sm rounded-circle">
+                                    <img src="assets/images/avatar/avatar1.webp" alt="">
+                                </div>
+                                <div class="ms-2">
+                                    <div class="fw-bold text-dark" id="wallet-address-detail"></div>
+                                    <small class="text-body d-block lh-sm" id="apt-balance"></small>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="dropdown-divider my-1"></div>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="profile.html">
+                                    <i class="fi fi-rr-user scale-1x"></i> View Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="task-management.html">
+                                    <i class="fi fi-rr-note scale-1x"></i> My Task
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="settings.html">
+                                    <i class="fi fi-rr-settings scale-1x"></i> Account Settings
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="pages/pricing.html">
+                                    <i class="fi fi-rr-usd-circle scale-1x"></i> Upgrade Plan
+                                </a>
+                            </li>
+                            <li>
+                                <div class="dropdown-divider my-1"></div>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 text-danger"
+                                    id="btn-disconnect">
+                                    <i class="fi fi-sr-exit scale-1x"></i> Log Out
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- end::NexLink Page Header -->
+
+
+        <!-- begin::NexLink Sidebar Menu -->
+        <aside class="app-menubar-tabs" id="appMenubar">
+            <div class="app-navbar-brand">
+                <a class="navbar-brand-logo" href="index.html">
+                    <img src="favicon.png" alt="NexLink Admin Dashboard Logo">
+                </a>
+            </div>
+            <div class="app-navbar-tabs simplebar-scrollable-y" data-simplebar="init">
+                <div class="simplebar-wrapper" style="margin: -10px -16px -16px;">
+                    <div class="simplebar-height-auto-observer-wrapper">
+                        <div class="simplebar-height-auto-observer"></div>
+                    </div>
+                    <div class="simplebar-mask">
+                        <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                            <div class="simplebar-content-wrapper" tabindex="0" role="region"
+                                aria-label="scrollable content" style="height: 100%; overflow: hidden scroll;">
+                                <div class="simplebar-content" style="padding: 10px 16px 16px;">
+                                    <ul class="nav" id="appMenubarTabs" role="tablist" aria-orientation="vertical">
+                                        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right"
+                                            data-bs-title="Home" role="presentation">
+                                            <a class="menu-link d-flex align-items-center justify-content-center active"
+                                                href="#dashboardTab" role="tab" aria-controls="dashboardTab"
+                                                aria-selected="true" data-bs-toggle="tab">
+                                                <i class="fi fi-rr-home"></i>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right"
+                                            data-bs-title="Deposits" role="presentation">
+                                            <a class="menu-link d-flex align-items-center justify-content-center"
+                                                href="#depositsTab" role="tab" aria-controls="depositsTab"
+                                                aria-selected="false" data-bs-toggle="tab" tabindex="-1">
+                                                <i class="fi fi-rr-usd-circle scale-1x"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="simplebar-placeholder" style="width: 79px; height: 666px;"></div>
+                </div>
+                <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+                    <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+                </div>
+                <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
+                    <div class="simplebar-scrollbar"
+                        style="height: 174px; display: block; transform: translate3d(0px, 150px, 0px);"></div>
+                </div>
+            </div>
+            <div class="app-tab-content">
+                <div class="app-side-brands">
+                    <a class="navbar-brand-text" href="index.html">Decibel Trade API</a>
+                </div>
+                <div class="app-content-inner">
+                    <div class="tab-content" id="appMenubarTabsContent">
+                        <div class="tab-pane fade show active" id="dashboardTab" role="tabpanel" tabindex="0">
+                            <nav class="app-navbar" data-simplebar>
+                                <ul class="side-menubar">
+                                    <li class="menu-item">
+                                        <a class="menu-link" href="index.html" role="button">
+                                            <i class="fi fi-rr-circle-user"></i>
+                                            <span class="menu-label">Trading Account</span>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a class="menu-link" href="sales.html" role="button">
+                                            <i class="fi fi-rr-credit-card"></i>
+                                            <span class="menu-label">API Key</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="depositsTab">
+                        <div class="tab-pane fade show active" id="depositsTab" role="tabpanel" tabindex="0">
+                            <nav class="app-navbar" data-simplebar>
+                                <ul class="side-menubar">
+                                    <li class="menu-item">
+                                        <a class="menu-link" href="index.html" role="button">
+                                            <i class="fi fi-rr-usd-circle"></i>
+                                            <span class="menu-label">Deposits</span>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a class="menu-link" href="sales.html" role="button">
+                                            <i class="fi fi-rr-arrow-from-bottom"></i>
+                                            <span class="menu-label">Withdrawals</span>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a class="menu-link" href="sales.html" role="button">
+                                            <i class="fi fi-rr-arrow-right-arrow-left"></i>
+                                            <span class="menu-label">Transfer</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <!-- end::NexLink Sidebar Menu -->
+
+        <main class="app-wrapper">
+
+            <div class="container-fluid">
+
+                <div class="app-page-head d-flex align-items-center justify-content-between">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="index.html">
+                                    <i class="fi fi-rr-home"></i> Home
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-xxl-6 col-lg-8">
+                        <div class="row">
+
+                        </div>
+                    </div>
+
+                    <div class="col-xxl-3 col-lg-4">
+                        <div class="row">
+
+                        </div>
+                    </div>
+
+                    <div class="col-xxl-3 col-lg-6">
+                        <div class="row">
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+
+    </div>
+
+    <!-- begin::NexLink Page Scripts -->
+    <script src="assets/libs/global/global.min.js"></script>
+    <script src="assets/libs/sortable/Sortable.min.js"></script>
+    <script src="assets/libs/chartjs/chart.js"></script>
+    <script src="assets/libs/flatpickr/flatpickr.min.js"></script>
+    <script src="assets/libs/apexcharts/apexcharts.min.js"></script>
+    <script src="assets/libs/datatables/datatables.min.js"></script>
+    <script src="assets/js/dashboard/dashboard.js"></script>
+    <script src="assets/js/plugins/todolist.js"></script>
+    <script src="assets/js/appSettings.js"></script>
+    <script src="assets/js/main.js"></script>
+    <!-- end::NexLink Page Scripts -->
+    <script src="{{ asset('js/disconnect.js') }}"></script>
+</body>
+
+</html>
