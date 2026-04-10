@@ -17366,9 +17366,9 @@ btnLogin.addEventListener("click", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_
         throw new Error(data.error || "Verification failed");
       case 9:
         authToken = data.token;
-        localStorage.setItem("petra_token", authToken);
-        localStorage.setItem("petra_user_id", data.user_id);
-        localStorage.setItem("petra_address", data.address);
+        localStorage.setItem("petra_temp_token", data.token);
+        localStorage.setItem("petra_temp_user_id", data.user_id);
+        localStorage.setItem("petra_temp_address", data.address);
         loginStatus.textContent = "✅ Login successful!";
         btnLogin.style.display = "none";
 
@@ -17377,7 +17377,7 @@ btnLogin.addEventListener("click", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_
         console.log("authToken:", authToken);
         console.log("document.cookie:", document.cookie);
         // Redirect về trang chủ
-        window.location.href = '/';
+        window.location.href = "/";
         _context2.n = 11;
         break;
       case 10:
@@ -17390,10 +17390,10 @@ btnLogin.addEventListener("click", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_
     }
   }, _callee2, null, [[1, 10]]);
 })));
-window.addEventListener('load', function () {
-  var token = localStorage.getItem('petra_token');
+window.addEventListener("load", function () {
+  var token = localStorage.getItem("petra_token");
   if (token) {
-    window.location.href = '/';
+    window.location.href = "/";
     return;
   }
 });

@@ -367,6 +367,7 @@
     <script src="assets/js/main.js"></script>
     <!-- end::NexLink Page Scripts -->
     <script src="{{ asset('js/disconnect.js') }}"></script>
+    <script src="{{ asset('js/get-balance.js') }}"></script>
 </body>
 
 </html>

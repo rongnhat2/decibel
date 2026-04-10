@@ -17160,45 +17160,24 @@ function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 
 var btnDisconnect = document.getElementById("btn-disconnect");
-
-// ===== INIT =====
-window.addEventListener("load", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
-  var fullAddr, apt;
-  return _regenerator().w(function (_context) {
-    while (1) switch (_context.n) {
-      case 0:
-        // Load balance
-        fullAddr = localStorage.getItem("petra_address");
-        _context.n = 1;
-        return getAptBalance(fullAddr);
-      case 1:
-        apt = _context.v;
-        document.getElementById("wallet-address").textContent = "".concat(fullAddr.slice(0, 6), "...").concat(fullAddr.slice(-6));
-        document.getElementById("wallet-address-detail").textContent = "".concat(fullAddr.slice(0, 6), "...").concat(fullAddr.slice(-6));
-        document.getElementById("apt-balance").textContent = apt + " APT";
-      case 2:
-        return _context.a(2);
-    }
-  }, _callee);
-})));
-btnDisconnect.addEventListener("click", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
+btnDisconnect.addEventListener("click", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
   var _petra$features$aptos, _getAptosWallets, aptosWallets, petra, _t;
-  return _regenerator().w(function (_context2) {
-    while (1) switch (_context2.p = _context2.n) {
+  return _regenerator().w(function (_context) {
+    while (1) switch (_context.p = _context.n) {
       case 0:
-        _context2.p = 0;
+        _context.p = 0;
         _getAptosWallets = (0,_aptos_labs_wallet_standard__WEBPACK_IMPORTED_MODULE_0__.getAptosWallets)(), aptosWallets = _getAptosWallets.aptosWallets;
         petra = aptosWallets === null || aptosWallets === void 0 ? void 0 : aptosWallets.find(function (w) {
-          return w.name === 'Petra';
+          return w.name === "Petra";
         });
-        _context2.n = 1;
+        _context.n = 1;
         return petra === null || petra === void 0 || (_petra$features$aptos = petra.features["aptos:disconnect"]) === null || _petra$features$aptos === void 0 ? void 0 : _petra$features$aptos.disconnect();
       case 1:
-        _context2.n = 3;
+        _context.n = 3;
         break;
       case 2:
-        _context2.p = 2;
-        _t = _context2.v;
+        _context.p = 2;
+        _t = _context.v;
       case 3:
         // Xoá localStorage
         localStorage.removeItem("petra_token");
@@ -17211,69 +17190,10 @@ btnDisconnect.addEventListener("click", /*#__PURE__*/_asyncToGenerator(/*#__PURE
         // Redirect về login
         window.location.href = "/login";
       case 4:
-        return _context2.a(2);
+        return _context.a(2);
     }
-  }, _callee2, null, [[0, 2]]);
+  }, _callee, null, [[0, 2]]);
 })));
-// ===== LẤY APT BALANCE =====
-function getAptBalance(_x) {
-  return _getAptBalance.apply(this, arguments);
-}
-function _getAptBalance() {
-  _getAptBalance = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(address) {
-    var _balData$, url, res, data, balRes, balData, octas, _t2;
-    return _regenerator().w(function (_context3) {
-      while (1) switch (_context3.p = _context3.n) {
-        case 0:
-          _context3.p = 0;
-          // Thử cách mới — dùng account balance API
-          url = "https://fullnode.testnet.aptoslabs.com/v1/accounts/".concat(address);
-          _context3.n = 1;
-          return fetch(url);
-        case 1:
-          res = _context3.v;
-          _context3.n = 2;
-          return res.json();
-        case 2:
-          data = _context3.v;
-          console.log("Account data:", data);
-          if (!(res.status === 404)) {
-            _context3.n = 3;
-            break;
-          }
-          return _context3.a(2, "0.0000");
-        case 3:
-          _context3.n = 4;
-          return fetch("https://fullnode.testnet.aptoslabs.com/v1/view", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              "function": "0x1::coin::balance",
-              type_arguments: ["0x1::aptos_coin::AptosCoin"],
-              arguments: [address]
-            })
-          });
-        case 4:
-          balRes = _context3.v;
-          _context3.n = 5;
-          return balRes.json();
-        case 5:
-          balData = _context3.v;
-          console.log("Balance data:", balData);
-          octas = (_balData$ = balData === null || balData === void 0 ? void 0 : balData[0]) !== null && _balData$ !== void 0 ? _balData$ : 0;
-          return _context3.a(2, (octas / 1e8).toFixed(4));
-        case 6:
-          _context3.p = 6;
-          _t2 = _context3.v;
-          console.error("Balance error:", _t2);
-          return _context3.a(2, "0.0000");
-      }
-    }, _callee3, null, [[0, 6]]);
-  }));
-  return _getAptBalance.apply(this, arguments);
-}
 })();
 
 /******/ })()

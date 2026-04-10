@@ -17,4 +17,8 @@ class DisplayController extends Controller
     {
         return view('customer.login');
     }
+    public function verifyCode()
+    {
+        return view('customer.verify-code');
+    }
 }

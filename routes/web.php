@@ -15,7 +15,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'Customer\DisplayController@index')
     ->name('customer.index')
-    ->middleware('auth.wallet');
+    ->middleware(['auth.wallet', 'verified.code']); // ← cần cả 2
+
+Route::get('/verify-code', 'Customer\DisplayController@verifyCode')
+    ->name('customer.verify-code')
+    ->middleware('auth.wallet'); // ← cần login mới vào được
 
 Route::get('/login', 'Customer\DisplayController@login')
     ->name('customer.login');

@@ -112,4 +112,48 @@ class WalletController extends Controller
             return false;
         }
     }
+
+    public function verifyCode(Request $request)
+    {
+        $request->validate([
+            'code'    => 'required|string',
+            'user_id' => 'required|integer',
+        ]);
+
+        $invite = \App\Models\InviteCode::where('code', $request->code)
+            ->where('status', 1)
+            ->whereNull('used_by')
+            ->first();
+
+        if (!$invite) {
+            return response()->json(['error' => 'Code invalid or already used'], 401);
+        }
+
+        // Đánh dấu code đã dùng
+        $invite->update([
+            'used_by' => $request->user_id,
+            'used_at' => now(),
+            'status'  => 0,
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    // Admin tạo code (dùng nội bộ)
+    public function generateCode(Request $request)
+    {
+        $codes = [];
+        $count = $request->input('count', 1);
+
+        for ($i = 0; $i < $count; $i++) {
+            $code = strtoupper(\Str::random(8)); // VD: A3KD92PX
+            \App\Models\InviteCode::create([
+                'code'       => $code,
+                'status'     => 1,
+            ]);
+            $codes[] = $code;
+        }
+
+        return response()->json(['codes' => $codes]);
+    }
 }

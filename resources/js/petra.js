@@ -24,9 +24,9 @@ window.addEventListener("load", () => {
         loginStatus.textContent = "✅ Đã đăng nhập";
         btnLogin.style.display = "none";
         const fullAddr = localStorage.getItem("petra_address") || "";
-        walletAddrEl.textContent = `${fullAddr.slice(0, 6)}...${fullAddr.slice(-6)}`; 
+        walletAddrEl.textContent = `${fullAddr.slice(0, 6)}...${fullAddr.slice(-6)}`;
         walletInfo.style.display = "block";
-        btnConnect.style.display = "none"; 
+        btnConnect.style.display = "none";
     }
 });
 
@@ -63,7 +63,9 @@ btnConnect.addEventListener("click", async () => {
     btnConnect.disabled = false;
 
     if (!petraWallet) {
-        alert("Petra Wallet not found! Please install the extension and refresh the page.");
+        alert(
+            "Petra Wallet not found! Please install the extension and refresh the page.",
+        );
         window.open("https://petra.app/", "_blank");
         return;
     }
@@ -85,7 +87,7 @@ btnConnect.addEventListener("click", async () => {
         localStorage.setItem("petra_address", walletAddress);
 
         const fullAddr = walletAddress;
-        walletAddrEl.textContent = `${fullAddr.slice(0, 6)}...${fullAddr.slice(-6)}`; 
+        walletAddrEl.textContent = `${fullAddr.slice(0, 6)}...${fullAddr.slice(-6)}`;
         walletInfo.style.display = "block";
         btnConnect.style.display = "none";
         btnLogin.style.display = "inline-block"; // hiện nút login
@@ -164,29 +166,28 @@ btnLogin.addEventListener("click", async () => {
         if (!verifyRes.ok) throw new Error(data.error || "Verification failed");
 
         authToken = data.token;
-        localStorage.setItem("petra_token", authToken);
-        localStorage.setItem("petra_user_id", data.user_id);
-        localStorage.setItem("petra_address", data.address);
+        localStorage.setItem("petra_temp_token", data.token);
+        localStorage.setItem("petra_temp_user_id", data.user_id);
+        localStorage.setItem("petra_temp_address", data.address);
+
         loginStatus.textContent = "✅ Login successful!";
         btnLogin.style.display = "none";
-
 
         // Lưu JWT vào cookie để Laravel middleware đọc
         document.cookie = `jwt_token=${authToken}; path=/; max-age=${60 * 60 * 24 * 7}`;
         console.log("authToken:", authToken);
         console.log("document.cookie:", document.cookie);
         // Redirect về trang chủ
-        window.location.href = '/';
-        
+        window.location.href = "/";
     } catch (err) {
         console.error(err);
         loginStatus.textContent = "❌ " + err.message;
     }
 });
-window.addEventListener('load', () => {
-    const token = localStorage.getItem('petra_token');
+window.addEventListener("load", () => {
+    const token = localStorage.getItem("petra_token");
     if (token) {
-        window.location.href = '/';
+        window.location.href = "/";
         return;
     }
 });
