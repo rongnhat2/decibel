@@ -3,5 +3,6 @@
     "/js/petra.js": "/js/petra.js",
     "/js/disconnect.js": "/js/disconnect.js",
     "/js/verify-code.js": "/js/verify-code.js",
+    "/js/index.js": "/js/index.js",
     "/css/app.css": "/css/app.css"
 }

@@ -117,8 +117,13 @@ class WalletController extends Controller
     {
         $request->validate([
             'code'    => 'required|string',
-            'user_id' => 'required|integer',
+            'user_id' => 'nullable|integer',
         ]);
+
+        $userId = auth()->id() ?: $request->user_id;
+        if (!$userId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
 
         $invite = \App\Models\InviteCode::where('code', $request->code)
             ->where('status', 1)
@@ -131,7 +136,7 @@ class WalletController extends Controller
 
         // Đánh dấu code đã dùng
         $invite->update([
-            'used_by' => $request->user_id,
+            'used_by' => $userId,
             'used_at' => now(),
             'status'  => 0,
         ]);

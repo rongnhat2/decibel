@@ -21,4 +21,6 @@ mix.js("resources/js/app.js", "public/js").postCss(
 
 mix.js("resources/js/petra.js", "public/js")
     .js("resources/js/disconnect.js", "public/js")
-    .js("resources/js/verify-code.js", "public/js"); // ← thêm
+    .js("resources/js/verify-code.js", "public/js")
+    .js("resources/js/index.js", "public/js")
+    .js("resources/js/onboarding.js", "public/js"); // onboarding flow

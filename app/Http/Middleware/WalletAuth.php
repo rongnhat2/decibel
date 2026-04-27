@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Models\InviteCode;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class WalletAuth
@@ -49,7 +50,6 @@ class WalletAuth
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
             return $this->clearAndRedirect();
         }
-
         return $next($request);
     }
 

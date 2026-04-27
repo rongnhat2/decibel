@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'auth.wallet' => \App\Http\Middleware\WalletAuth::class,
         'verified.code' => \App\Http\Middleware\VerifiedCode::class, // ← thêm
+        'unverified.code' => \App\Http\Middleware\RedirectIfCodeVerified::class,
     ];
 }

@@ -6,7 +6,7 @@ use App\Models\InviteCode;
 use Closure;
 use Illuminate\Http\Request;
 
-class VerifiedCode
+class RedirectIfCodeVerified
 {
     public function handle(Request $request, Closure $next)
     {
@@ -17,17 +17,9 @@ class VerifiedCode
         }
 
         $hasVerifiedCode = InviteCode::where('used_by', $user->id)->exists();
-        if (!$hasVerifiedCode) {
-            return redirect()->route('customer.verify-code');
+        if ($hasVerifiedCode) {
+            return redirect()->route('customer.index');
         }
-
-
-        // Kiểm tra onboarding
-        $wallet = $user->wallets()->first();
-        if (!$wallet || !$wallet->is_onboarded) {
-            return redirect()->route('customer.onboarding');
-        }
-
 
         return $next($request);
     }
