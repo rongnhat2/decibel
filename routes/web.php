@@ -22,7 +22,13 @@ Route::get('/verify-code', 'Customer\DisplayController@verifyCode')
     ->middleware(['auth.wallet', 'unverified.code']); // đã verify thì về index
 
 Route::get('/login', 'Customer\DisplayController@login')
+    ->middleware('guest')
     ->name('customer.login');
+
+Route::get('/logout', function () {
+    return redirect()->route('customer.login')
+        ->withCookie(cookie()->forget('jwt_token'));
+})->name('customer.logout');
 
 Route::get('/onboarding', 'Customer\DisplayController@onboarding')
     ->name('customer.onboarding')

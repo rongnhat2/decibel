@@ -22,6 +22,7 @@ async function postJson(url, payload) {
     return data;
 }
 
+
 export async function runOnboarding(options) {
     const {
         walletAddress,

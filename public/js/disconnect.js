@@ -17160,40 +17160,42 @@ function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 
 var btnDisconnect = document.getElementById("btn-disconnect");
-btnDisconnect.addEventListener("click", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
-  var _petra$features$aptos, _getAptosWallets, aptosWallets, petra, _t;
-  return _regenerator().w(function (_context) {
-    while (1) switch (_context.p = _context.n) {
-      case 0:
-        _context.p = 0;
-        _getAptosWallets = (0,_aptos_labs_wallet_standard__WEBPACK_IMPORTED_MODULE_0__.getAptosWallets)(), aptosWallets = _getAptosWallets.aptosWallets;
-        petra = aptosWallets === null || aptosWallets === void 0 ? void 0 : aptosWallets.find(function (w) {
-          return w.name === "Petra";
-        });
-        _context.n = 1;
-        return petra === null || petra === void 0 || (_petra$features$aptos = petra.features["aptos:disconnect"]) === null || _petra$features$aptos === void 0 ? void 0 : _petra$features$aptos.disconnect();
-      case 1:
-        _context.n = 3;
-        break;
-      case 2:
-        _context.p = 2;
-        _t = _context.v;
-      case 3:
-        // Xoá localStorage
-        localStorage.removeItem("petra_token");
-        localStorage.removeItem("petra_user_id");
-        localStorage.removeItem("petra_address");
+if (btnDisconnect) {
+  btnDisconnect.addEventListener("click", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
+    var _petra$features$aptos, _getAptosWallets, aptosWallets, petra, _t;
+    return _regenerator().w(function (_context) {
+      while (1) switch (_context.p = _context.n) {
+        case 0:
+          _context.p = 0;
+          _getAptosWallets = (0,_aptos_labs_wallet_standard__WEBPACK_IMPORTED_MODULE_0__.getAptosWallets)(), aptosWallets = _getAptosWallets.aptosWallets;
+          petra = aptosWallets === null || aptosWallets === void 0 ? void 0 : aptosWallets.find(function (w) {
+            return w.name === "Petra";
+          });
+          _context.n = 1;
+          return petra === null || petra === void 0 || (_petra$features$aptos = petra.features["aptos:disconnect"]) === null || _petra$features$aptos === void 0 ? void 0 : _petra$features$aptos.disconnect();
+        case 1:
+          _context.n = 3;
+          break;
+        case 2:
+          _context.p = 2;
+          _t = _context.v;
+        case 3:
+          // Xoá localStorage
+          localStorage.removeItem("petra_token");
+          localStorage.removeItem("petra_user_id");
+          localStorage.removeItem("petra_address");
 
-        // Xoá cookie jwt_token
-        document.cookie = "jwt_token=; path=/; max-age=0";
+          // Xoá cookie JWT phía client (non-HttpOnly)
+          document.cookie = "jwt_token=; path=/; max-age=0";
 
-        // Redirect về login
-        window.location.href = "/login";
-      case 4:
-        return _context.a(2);
-    }
-  }, _callee, null, [[0, 2]]);
-})));
+          // Đảm bảo server xoá luôn cookie HttpOnly nếu có
+          window.location.href = "/logout";
+        case 4:
+          return _context.a(2);
+      }
+    }, _callee, null, [[0, 2]]);
+  })));
+}
 })();
 
 /******/ })()

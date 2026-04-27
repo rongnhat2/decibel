@@ -3,6 +3,8 @@
     "/js/petra.js": "/js/petra.js",
     "/js/disconnect.js": "/js/disconnect.js",
     "/js/verify-code.js": "/js/verify-code.js",
+    "/js/get-balance.js": "/js/get-balance.js",
     "/js/index.js": "/js/index.js",
+    "/js/onboarding.js": "/js/onboarding.js",
     "/css/app.css": "/css/app.css"
 }

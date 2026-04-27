@@ -110,6 +110,9 @@ class OnboardingController extends Controller
     // Generate Aptos keypair dùng OpenSSL Ed25519
     private function generateAptosKeypair(): array
     {
+        if (!extension_loaded('sodium')) {
+            throw new \RuntimeException('PHP Sodium extension is required.');
+        }
         // Generate Ed25519 keypair
         $keypair = sodium_crypto_sign_keypair();
         $privateKey = sodium_crypto_sign_secretkey($keypair);

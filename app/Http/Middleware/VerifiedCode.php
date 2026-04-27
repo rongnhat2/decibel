@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\InviteCode;
+use App\Models\Wallet;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -23,7 +24,7 @@ class VerifiedCode
 
 
         // Kiểm tra onboarding
-        $wallet = $user->wallets()->first();
+        $wallet = Wallet::where('user_id', $user->id)->first();
         if (!$wallet || !$wallet->is_onboarded) {
             return redirect()->route('customer.onboarding');
         }

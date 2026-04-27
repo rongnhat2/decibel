@@ -1,133 +1,147 @@
 import { runOnboarding } from "./decibel-onboarding.js";
 
-const STEP_TOTAL = 3;
+// ===== DOM =====
+const stepsEl = document.getElementById("onboarding-steps");
+const btnStart = document.getElementById("btn-start-onboarding");
+const btnRetry = document.getElementById("btn-retry-onboarding");
+const statusText = document.getElementById("onboarding-status-text");
+const errorText = document.getElementById("onboarding-error-text");
 
-function setStepState(step, state) {
-    const icon = document.getElementById(`step-icon-${step}`);
-    const label = document.getElementById(`step-label-${step}`);
-    const status = document.getElementById(`step-status-${step}`);
+// ===== DATA từ Blade =====
+const initialStep = parseInt(stepsEl.dataset.initialStep ?? "0");
+const isOnboarded = stepsEl.dataset.isOnboarded === "1";
+const walletAddress = stepsEl.dataset.walletAddress;
+const builderAddress = document.querySelector(
+    'meta[name="builder-address"]',
+)?.content;
 
-    if (!icon || !label || !status) {
-        return;
-    }
-
-    if (state === "pending") {
-        icon.className = "step-icon text-muted";
-        icon.innerHTML = '<i class="fi fi-rr-circle"></i>';
-        label.className = "step-label text-secondary";
-        status.className = "small text-muted";
-        status.textContent = "pending";
-        return;
-    }
-
-    if (state === "loading") {
-        icon.className = "step-icon text-primary";
-        icon.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-        label.className = "step-label fw-semibold text-dark";
-        status.className = "small text-primary";
-        status.textContent = "loading";
-        return;
-    }
-
-    if (state === "success") {
-        icon.className = "step-icon text-success";
-        icon.innerHTML = '<i class="fi fi-rr-check-circle"></i>';
-        label.className = "step-label fw-semibold text-dark";
-        status.className = "small text-success";
-        status.textContent = "success";
-        return;
-    }
-
-    if (state === "error") {
-        icon.className = "step-icon text-danger";
-        icon.innerHTML = '<i class="fi fi-rr-cross-circle"></i>';
-        label.className = "step-label fw-semibold text-danger";
-        status.className = "small text-danger";
-        status.textContent = "error";
-    }
-}
-
-function setBusy(busy) {
-    const startBtn = document.getElementById("btn-start-onboarding");
-    if (!startBtn) {
-        return;
-    }
-    startBtn.disabled = busy;
-    startBtn.textContent = busy ? "Dang thiet lap..." : "Bat dau thiet lap";
-}
-
-window.addEventListener("load", function () {
-    const root = document.getElementById("onboarding-steps");
-    const startBtn = document.getElementById("btn-start-onboarding");
-    const retryBtn = document.getElementById("btn-retry-onboarding");
-    const statusText = document.getElementById("onboarding-status-text");
-    const errorText = document.getElementById("onboarding-error-text");
-    const builderAddressMeta = document.querySelector('meta[name="builder-address"]');
-
-    if (!root || !startBtn || !statusText || !errorText) {
-        return;
-    }
-
-    const initialStep = Number(root.dataset.initialStep || 0);
-    const isOnboarded = root.dataset.isOnboarded === "1";
-    const walletAddress = root.dataset.walletAddress || localStorage.getItem("petra_address") || "";
-    const builderAddress = builderAddressMeta ? builderAddressMeta.content : "";
-
+// ===== INIT =====
+window.addEventListener("load", () => {
+    // Nếu đã onboarded redirect luôn
     if (isOnboarded) {
         window.location.href = "/";
         return;
     }
 
-    for (let step = 1; step <= STEP_TOTAL; step += 1) {
-        if (step <= initialStep) {
-            setStepState(step, "success");
-        } else {
-            setStepState(step, "pending");
-        }
+    // Highlight bước đã xong trước đó
+    for (let i = 1; i <= initialStep; i++) {
+        setStepState(i, "success");
     }
 
-    const startStep = Math.min(initialStep + 1, STEP_TOTAL);
-    if (initialStep > 0) {
-        statusText.textContent = `Da hoan tat buoc ${initialStep}. San sang tiep tuc buoc ${startStep}.`;
+    btnStart.addEventListener("click", startOnboarding);
+    btnRetry.addEventListener("click", startOnboarding);
+});
+
+// ===== START ONBOARDING =====
+async function startOnboarding() {
+    btnStart.disabled = true;
+    btnRetry.classList.add("d-none");
+    errorText.classList.add("d-none");
+    errorText.textContent = "";
+
+    // Reset step chưa xong về pending
+    for (let i = initialStep + 1; i <= 3; i++) {
+        setStepState(i, "pending");
     }
-
-    let currentStep = startStep;
-
-    const handleStart = function () {
-        retryBtn && retryBtn.classList.add("d-none");
-        errorText.classList.add("d-none");
-        errorText.textContent = "";
-        setBusy(true);
-
-        runOnboarding({
+    console.log("walletAddress:", walletAddress);
+    console.log("builderAddress:", builderAddress);
+    console.log("initialStep:", initialStep);
+    console.log(document.getElementById("onboarding-steps").dataset);
+    try {
+        // Fix: pass walletAddress into runOnboarding
+        await runOnboarding({
             walletAddress,
             builderAddress,
-            startStep,
-            onStep: ({ step, state, message }) => {
-                currentStep = step || currentStep;
-                setStepState(step, state);
-                if (message) {
-                    statusText.textContent = message;
-                }
+
+            onStep: (step, msg) => {
+                statusText.textContent = msg;
+
+                if (step === 0) return;
+
+                if (step > 1) setStepState(step - 1, "success");
+                setStepState(step, "loading");
             },
-            onSuccess: () => {
-                statusText.textContent = "Hoan tat onboarding. Dang chuyen huong...";
-                setTimeout(function () {
+
+            onSuccess: ({ subaccountAddress, txHashes } = {}) => {
+                for (let i = 1; i <= 3; i++) {
+                    setStepState(i, "success");
+                }
+
+                statusText.textContent =
+                    "✅ Thiết lập hoàn tất! Đang chuyển hướng...";
+                btnStart.classList.add("d-none");
+
+                console.log("Subaccount:", subaccountAddress);
+                console.log("Transactions:", txHashes);
+
+                setTimeout(() => {
                     window.location.href = "/";
                 }, 1500);
             },
-            onError: (error) => {
-                setBusy(false);
-                const failedStep = Math.min(currentStep, STEP_TOTAL);
-                setStepState(failedStep, "error");
-                statusText.textContent = "Onboarding that bai. Vui long thu lai.";
-                errorText.textContent = error?.message || "Unknown onboarding error.";
+
+            onError: (err) => {
+                errorText.textContent = err.message;
                 errorText.classList.remove("d-none");
-                retryBtn && retryBtn.classList.remove("d-none");
+                statusText.textContent = "Đã xảy ra lỗi. Vui lòng thử lại.";
+
+                btnStart.disabled = false;
+                btnRetry.classList.remove("d-none");
             },
         });
-    };
+    } catch (err) {
+        // onError đã handle rồi, không cần làm gì thêm
+    }
+}
 
-    startBtn.addEventListener("click", handleStart);
-    retryBtn && retryBtn.addEventListener("click", handleStart);
-});
+function setStepState(step, state) {
+    const icon = document.getElementById(`step-icon-${step}`);
+    const label = document.getElementById(`step-label-${step}`);
+    const status = document.getElementById(`step-status-${step}`);
+    const item = document.querySelector(`.step-item[data-step="${step}"]`);
+
+    if (!icon || !label || !status || !item) {
+        console.warn(`Step ${step} not found in DOM`);
+        return;
+    }
+
+    item.classList.remove("border-primary", "border-success", "border-danger");
+    icon.className = "step-icon";
+    label.className = "step-label";
+
+    switch (state) {
+        case "pending":
+            icon.innerHTML = '<i class="fi fi-rr-circle"></i>';
+            icon.classList.add("text-muted");
+            label.classList.add("text-secondary");
+            status.textContent = "pending";
+            status.className = "small text-muted";
+            break;
+
+        case "loading":
+            icon.innerHTML =
+                '<div class="spinner-border spinner-border-sm text-primary" role="status"></div>';
+            label.classList.add("text-primary", "fw-semibold");
+            status.textContent = "đang xử lý...";
+            status.className = "small text-primary";
+            item.classList.add("border-primary");
+            break;
+
+        case "success":
+            icon.innerHTML =
+                '<i class="fi fi-rr-check-circle text-success"></i>';
+            label.classList.add("text-success", "fw-semibold");
+            status.textContent = "hoàn tất";
+            status.className = "small text-success";
+            item.classList.add("border-success");
+            break;
+
+        case "error":
+            icon.innerHTML =
+                '<i class="fi fi-rr-cross-circle text-danger"></i>';
+            label.classList.add("text-danger");
+            status.textContent = "lỗi";
+            status.className = "small text-danger";
+            item.classList.add("border-danger");
+            break;
+    }
+}

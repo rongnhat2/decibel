@@ -6,6 +6,7 @@ use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class RedirectIfAuthenticated
 {
@@ -19,11 +20,24 @@ class RedirectIfAuthenticated
      */
     public function handle(Request $request, Closure $next, ...$guards)
     {
+        $token = $request->cookie('jwt_token');
+        if ($token) {
+            try {
+                $user = JWTAuth::setToken($token)->authenticate();
+                if ($user) {
+                    auth()->setUser($user);
+                    return redirect()->route('customer.index');
+                }
+            } catch (\Throwable $e) {
+                // Invalid/expired token should not block guest access.
+            }
+        }
+
         $guards = empty($guards) ? [null] : $guards;
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                return redirect()->route('customer.index');
             }
         }
 

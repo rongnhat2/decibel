@@ -20,7 +20,7 @@ Route::post('/auth/verify-code', 'Customer\WalletController@verifyCode');
 // routes/api.php
 Route::post('/admin/generate-codes', 'Customer\WalletController@generateCode');
 // Routes cần auth
-Route::middleware('wallet.auth')->group(function () {
+Route::middleware('auth.wallet')->group(function () {
     Route::POST('/onboard/prepare', 'Customer\WalletController@getBalance')->name('onboard.prepare');
     Route::POST('/onboard/complete', 'Customer\WalletController@getBalance')->name('onboard.complete');
     Route::POST('/account/info', 'Customer\WalletController@getBalance')->name('account.info');

@@ -65,6 +65,7 @@
     <link rel="stylesheet" href="assets/libs/node-waves/waves.css">
     <link rel="stylesheet" href="assets/libs/bootstrap-select/css/bootstrap-select.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="builder-address" content="{{ config('decibel.builder_address') }}">
     <!-- end::Decibel Required Stylesheet -->
 
     <!-- begin::Decibel CSS Stylesheet -->
@@ -331,6 +332,8 @@
     <script src="assets/js/plugins/todolist.js"></script>
     <script src="assets/js/appSettings.js"></script>
     <script src="assets/js/main.js"></script>
+    <script src="{{ asset('js/disconnect.js') }}"></script>
+    <script src="{{ asset('js/get-balance.js') }}"></script>
     <!-- end::NexLink Page Scripts -->
     @yield('scripts')
 
