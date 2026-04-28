@@ -50,6 +50,19 @@ class OnboardingController extends Controller
             $wallet->refresh();
         }
 
+        // Generate credentials nếu chưa có
+        if (!$wallet->api_key) {
+            $apiKey    = 'dcbl_' . bin2hex(random_bytes(12));
+            $secretRaw = 'sk_'   . bin2hex(random_bytes(16));
+
+            $wallet->update([
+                'api_key'      => $apiKey,
+                'secret_key'   => hash('sha256', $secretRaw),
+                'secret_plain' => Crypt::encryptString($secretRaw),
+            ]);
+            $wallet->refresh();
+        }
+
         \Log::info('response', [
             'bot_key_address'    => $wallet->bot_address,
             'subaccount_address' => $wallet->subaccount_address,
@@ -105,10 +118,15 @@ class OnboardingController extends Controller
 
             case 3:
                 $txHashes['delegate_trading'] = $request->tx_hash;
+                $apiKey    = 'dcbl_' . bin2hex(random_bytes(12)); // dcbl_xxxxxxxxxxxx
+                $secretRaw = 'sk_'   . bin2hex(random_bytes(16)); // sk_xxxxxxxxxxxxxxxx
                 $wallet->update([
                     'onboarding_step' => 3,
                     'is_onboarded'    => true,
                     'tx_hashes'       => json_encode($txHashes),
+                    'api_key'         => $apiKey,
+                    'secret_key'      => hash('sha256', $secretRaw),
+                    'secret_plain'    => Crypt::encryptString($secretRaw),
                 ]);
                 break;
         }

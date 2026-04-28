@@ -26,6 +26,7 @@ import time
 import uuid
 import signal
 import datetime
+import aiohttp
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -36,6 +37,26 @@ from dotenv import load_dotenv
 # LOAD .env
 # ─────────────────────────────────────────────────────────────
 load_dotenv(override=True)
+
+
+async def fetch_credentials():
+    async with aiohttp.ClientSession() as s:
+         async with s.post(
+            f"{LARAVEL_API_URL}/api/internal/bot-credentials",
+            json={
+                "api_key":    API_KEY,
+                "secret_key": SECRET_KEY,
+            },
+            headers={
+                "Content-Type": "application/json",
+                "Accept":       "application/json",  # ← thêm dòng này
+            },
+        ) as r:
+            text = await r.text()
+            print(f"Credentials response: {r.status} {text[:200]}")
+            if r.status != 200:
+                raise Exception(f"Auth failed: {text}")
+            return await r.json(content_type=None)
 
 # ─────────────────────────────────────────────────────────────
 # BCS TRANSACTION HELPER
@@ -186,6 +207,11 @@ BUILDER_ADDRESS  = os.getenv("BUILDER_ADDRESS", "")
 BUILDER_FEE_BPS  = int(os.getenv("BUILDER_FEE_BPS", "2"))
 DECIBEL_API_KEY  = os.getenv("DECIBEL_API_KEY", "")
 DEPOSIT_USDC     = float(os.getenv("DEPOSIT_USDC", "0"))
+
+LARAVEL_API_URL  = os.getenv("LARAVEL_API_URL", "")
+API_KEY          = os.getenv("API_KEY", "")
+SECRET_KEY       = os.getenv("SECRET_KEY", "")
+WALLET_ADDRESS       = os.getenv("WALLET_ADDRESS", "")
 
 NETWORKS = {
     "mainnet": {
@@ -995,9 +1021,21 @@ class Bot:
 # ─────────────────────────────────────────────────────────────
 async def main():
     validate()
+ 
+    global PRIVATE_KEY, SUBACCOUNT_ADDR
 
+    # Lấy credentials từ Laravel
+    if LARAVEL_API_URL and API_KEY and SECRET_KEY:
+        print("Fetching credentials from Laravel...")
+        creds = await fetch_credentials()
+        if creds:
+            PRIVATE_KEY     = creds['bot_private_key']
+            SUBACCOUNT_ADDR = creds['subaccount_address']
+            print(f"✓ Wallet : {creds['wallet_address'][:16]}...")
+            print(f"✓ Bot    : {creds['bot_address'][:16]}...")
+            print(f"✓ Sub    : {SUBACCOUNT_ADDR[:16]}...")
+ 
     subaccount = SUBACCOUNT_ADDR
-
     # Nếu chưa có sub-account → chạy setup
     if not subaccount:
         print("SUBACCOUNT_ADDR chưa có → chạy setup...")

@@ -28,6 +28,16 @@ Route::middleware('auth.wallet')->group(function () {
     Route::POST('/onboarding/bot-key', 'Customer\OnboardingController@getBotKey')->name('onboard.bot-key');
     Route::POST('/onboarding/progress', 'Customer\OnboardingController@saveProgress')->name('onboard.progress');
 });
+Route::middleware('auth:api')->get(
+    '/account/credentials',
+    'Customer\AccountController@credentials'
+);
+Route::middleware('auth:api')->post(
+    '/account/regenerate-credentials',
+    'Customer\AccountController@regenerateCredentials'
+);
+// routes/api.php
+Route::post('/internal/bot-credentials', 'Admin\BotController@getCredentials');
 
 // Route::middleware('auth:api')->group(function () {
 //     Route::get('/me', function () {

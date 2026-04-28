@@ -10,6 +10,7 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   continueOnboarding: () => (/* binding */ continueOnboarding),
 /* harmony export */   runOnboarding: () => (/* binding */ runOnboarding)
 /* harmony export */ });
 /* harmony import */ var _aptos_labs_ts_sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @aptos-labs/ts-sdk */ "./node_modules/@aptos-labs/ts-sdk/dist/esm/index.mjs");
@@ -91,7 +92,7 @@ function csrf() {
 }
 function postJson(_x, _x2) {
   return _postJson.apply(this, arguments);
-} // ===== SIGN AND SUBMIT dùng Petra Wallet Standard =====
+} // ===== SIGN AND SUBMIT using Petra Wallet Standard =====
 function _postJson() {
   _postJson = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(url, payload) {
     var res, data;
@@ -140,7 +141,12 @@ function _signAndSubmit() {
           _context4.n = 1;
           return aptos.transaction.build.simple({
             sender: senderAddress,
-            data: payload
+            data: payload,
+            options: {
+              maxGasAmount: 1000,
+              // ← giảm từ default xuống
+              gasUnitPrice: 100
+            }
           });
         case 1:
           txn = _context4.v;
@@ -153,7 +159,7 @@ function _signAndSubmit() {
           console.log("args:", signResponse === null || signResponse === void 0 ? void 0 : signResponse.args);
           console.log("args constructor:", signResponse === null || signResponse === void 0 || (_signResponse$args = signResponse.args) === null || _signResponse$args === void 0 || (_signResponse$args = _signResponse$args.constructor) === null || _signResponse$args === void 0 ? void 0 : _signResponse$args.name);
 
-          // Dùng ts-sdk submit đúng cách
+          // Use ts-sdk submit the correct way
           _context4.n = 3;
           return aptos.transaction.submit.simple({
             transaction: txn,
@@ -193,9 +199,9 @@ function _stepApproveBuilderFee() {
             "function": "0x50ead22afd6ffd9769e3b3d6e0e64a2a350d68e8b102c4e72e33d0b8cfdfdb06::dex_accounts_entry::approve_max_builder_fee_for_subaccount",
             typeArguments: [],
             functionArguments: [_aptos_labs_ts_sdk__WEBPACK_IMPORTED_MODULE_0__.AccountAddress.from(subaccountAddress),
-            // ← wrap với AccountAddress
+            // ← wrap with AccountAddress
             _aptos_labs_ts_sdk__WEBPACK_IMPORTED_MODULE_0__.AccountAddress.from(builderAddress),
-            // ← wrap với AccountAddress
+            // ← wrap with AccountAddress
             BigInt(maxFeeBps)]
           };
           return _context5.a(2, signAndSubmit(aptos, petra, senderAddress, payload));
@@ -227,6 +233,7 @@ function _stepDelegateTrading() {
 function runOnboarding() {
   return _runOnboarding.apply(this, arguments);
 }
+// Function to continue onboarding after the user has deposited APT
 function _runOnboarding() {
   _runOnboarding = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee7() {
     var _ref,
@@ -241,6 +248,7 @@ function _runOnboarding() {
       onSuccess,
       _ref$onError,
       onError,
+      onWaitForGas,
       aptos,
       senderAddress,
       _yield$postJson,
@@ -263,12 +271,12 @@ function _runOnboarding() {
             return console.log("Done:", data);
           } : _ref$onSuccess, _ref$onError = _ref.onError, onError = _ref$onError === void 0 ? function (err) {
             return console.error(err);
-          } : _ref$onError;
+          } : _ref$onError, onWaitForGas = _ref.onWaitForGas;
           if (builderAddress) {
             _context7.n = 1;
             break;
           }
-          throw new Error("builderAddress là bắt buộc");
+          throw new Error("builderAddress is required");
         case 1:
           aptos = getAptosClient();
           _context7.p = 2;
@@ -276,11 +284,11 @@ function _runOnboarding() {
           return getWalletAddress();
         case 3:
           senderAddress = _context7.v;
-          // Bước 0: Laravel tạo bot_key + redeem referral
+          // Step 0: Laravel creates bot_key + redeem referral
           onStep({
             step: 0,
             state: "loading",
-            message: "Đang khởi tạo tài khoản..."
+            message: "Initializing account..."
           });
           _context7.n = 4;
           return postJson("/api/onboarding/bot-key", {
@@ -290,90 +298,222 @@ function _runOnboarding() {
           _yield$postJson = _context7.v;
           bot_key_address = _yield$postJson.bot_key_address;
           subaccount_address = _yield$postJson.subaccount_address;
-          console.log("subaccount_address:", subaccount_address);
-          console.log("bot_key_address:", bot_key_address);
-          subaccountAddress = subaccount_address; // Lấy petra
-          _context7.n = 5;
-          return getPetraWallet();
-        case 5:
-          petra = _context7.v;
-          if (petra) {
+          if (!onWaitForGas) {
             _context7.n = 6;
             break;
           }
-          throw new Error("Không tìm thấy Petra wallet");
+          _context7.n = 5;
+          return onWaitForGas(bot_key_address);
+        case 5:
+          return _context7.a(2);
         case 6:
+          console.log("subaccount_address:", subaccount_address);
+          console.log("bot_key_address:", bot_key_address);
+          subaccountAddress = subaccount_address; // Get Petra wallet
+          _context7.n = 7;
+          return getPetraWallet();
+        case 7:
+          petra = _context7.v;
+          if (petra) {
+            _context7.n = 8;
+            break;
+          }
+          throw new Error("Could not find Petra wallet");
+        case 8:
           if (!(startStep <= 1)) {
-            _context7.n = 9;
+            _context7.n = 11;
             break;
           }
           onStep({
             step: 1,
             state: "loading",
-            message: "Approve Builder Fee... Petra sẽ hiện popup."
+            message: "Approve Builder Fee... Petra popup will appear."
           });
-          _context7.n = 7;
+          _context7.n = 9;
           return stepApproveBuilderFee(aptos, petra, senderAddress, subaccountAddress, builderAddress, maxFeeBps);
-        case 7:
+        case 9:
           _yield$stepApproveBui = _context7.v;
           hash = _yield$stepApproveBui.hash;
-          _context7.n = 8;
+          _context7.n = 10;
           return postJson("/api/onboarding/progress", {
             wallet_address: senderAddress,
             step: 2,
             tx_hash: hash
           });
-        case 8:
+        case 10:
           onStep({
             step: 1,
             state: "success",
-            message: "Approve Builder Fee thành công."
+            message: "Approve Builder Fee successful."
           });
-        case 9:
+        case 11:
           if (!(startStep <= 2)) {
-            _context7.n = 12;
+            _context7.n = 14;
             break;
           }
           onStep({
             step: 2,
             state: "loading",
-            message: "Uỷ quyền Bot Trading... Petra sẽ hiện popup."
+            message: "Authorize Bot Trading... Petra popup will appear."
           });
-          _context7.n = 10;
+          _context7.n = 12;
           return stepDelegateTrading(aptos, petra, senderAddress, subaccountAddress, bot_key_address);
-        case 10:
+        case 12:
           _yield$stepDelegateTr = _context7.v;
           _hash = _yield$stepDelegateTr.hash;
-          _context7.n = 11;
+          _context7.n = 13;
           return postJson("/api/onboarding/progress", {
             wallet_address: senderAddress,
             step: 3,
             tx_hash: _hash
           });
-        case 11:
+        case 13:
           onStep({
             step: 2,
             state: "success",
-            message: "Uỷ quyền Bot Trading thành công."
+            message: "Authorize Bot Trading successful."
           });
-        case 12:
+        case 14:
           onSuccess({
             subaccountAddress: subaccountAddress,
             botKeyAddress: bot_key_address
           });
-          _context7.n = 14;
+          _context7.n = 16;
           break;
-        case 13:
-          _context7.p = 13;
+        case 15:
+          _context7.p = 15;
           _t = _context7.v;
           onError(_t);
           throw _t;
-        case 14:
+        case 16:
           return _context7.a(2);
       }
-    }, _callee7, null, [[2, 13]]);
+    }, _callee7, null, [[2, 15]]);
   }));
   return _runOnboarding.apply(this, arguments);
+}
+function continueOnboarding() {
+  return _continueOnboarding.apply(this, arguments);
+}
+function _continueOnboarding() {
+  _continueOnboarding = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee8() {
+    var _ref2,
+      builderAddress,
+      _ref2$maxFeeBps,
+      maxFeeBps,
+      onStep,
+      onSuccess,
+      onError,
+      aptos,
+      petra,
+      senderAddress,
+      _yield$postJson2,
+      bot_key_address,
+      subaccount_address,
+      _yield$stepApproveBui2,
+      hash1,
+      _yield$stepDelegateTr2,
+      hash2,
+      _args8 = arguments,
+      _t2;
+    return _regenerator().w(function (_context8) {
+      while (1) switch (_context8.p = _context8.n) {
+        case 0:
+          _ref2 = _args8.length > 0 && _args8[0] !== undefined ? _args8[0] : {}, builderAddress = _ref2.builderAddress, _ref2$maxFeeBps = _ref2.maxFeeBps, maxFeeBps = _ref2$maxFeeBps === void 0 ? 7 : _ref2$maxFeeBps, onStep = _ref2.onStep, onSuccess = _ref2.onSuccess, onError = _ref2.onError;
+          aptos = getAptosClient();
+          _context8.n = 1;
+          return getPetraWallet();
+        case 1:
+          petra = _context8.v;
+          if (petra) {
+            _context8.n = 2;
+            break;
+          }
+          throw new Error("Could not find Petra wallet");
+        case 2:
+          _context8.p = 2;
+          _context8.n = 3;
+          return getWalletAddress();
+        case 3:
+          senderAddress = _context8.v;
+          _context8.n = 4;
+          return postJson("/api/onboarding/bot-key", {
+            wallet_address: senderAddress
+          });
+        case 4:
+          _yield$postJson2 = _context8.v;
+          bot_key_address = _yield$postJson2.bot_key_address;
+          subaccount_address = _yield$postJson2.subaccount_address;
+          if (subaccount_address) {
+            _context8.n = 5;
+            break;
+          }
+          throw new Error("Could not get subaccount address");
+        case 5:
+          // Tx1: Approve builder fee
+          onStep({
+            step: 1,
+            state: "loading",
+            message: "Approve Builder Fee... Petra popup will appear."
+          });
+          _context8.n = 6;
+          return stepApproveBuilderFee(aptos, petra, senderAddress, subaccount_address, builderAddress, maxFeeBps);
+        case 6:
+          _yield$stepApproveBui2 = _context8.v;
+          hash1 = _yield$stepApproveBui2.hash;
+          _context8.n = 7;
+          return postJson("/api/onboarding/progress", {
+            wallet_address: senderAddress,
+            step: 2,
+            tx_hash: hash1
+          });
+        case 7:
+          onStep({
+            step: 1,
+            state: "success",
+            message: "Approve Builder Fee successful."
+          });
+
+          // Tx2: Delegate trading
+          onStep({
+            step: 2,
+            state: "loading",
+            message: "Authorize Bot Trading... Petra popup will appear."
+          });
+          _context8.n = 8;
+          return stepDelegateTrading(aptos, petra, senderAddress, subaccount_address, bot_key_address);
+        case 8:
+          _yield$stepDelegateTr2 = _context8.v;
+          hash2 = _yield$stepDelegateTr2.hash;
+          _context8.n = 9;
+          return postJson("/api/onboarding/progress", {
+            wallet_address: senderAddress,
+            step: 3,
+            tx_hash: hash2
+          });
+        case 9:
+          onStep({
+            step: 2,
+            state: "success",
+            message: "Authorize Bot Trading successful."
+          });
+          onSuccess({
+            subaccountAddress: subaccount_address,
+            botKeyAddress: bot_key_address
+          });
+          _context8.n = 11;
+          break;
+        case 10:
+          _context8.p = 10;
+          _t2 = _context8.v;
+          onError(_t2);
+          throw _t2;
+        case 11:
+          return _context8.a(2);
+      }
+    }, _callee8, null, [[2, 10]]);
+  }));
+  return _continueOnboarding.apply(this, arguments);
 }
 
 /***/ },
@@ -17545,7 +17685,7 @@ var btnRetry = document.getElementById("btn-retry-onboarding");
 var statusText = document.getElementById("onboarding-status-text");
 var errorText = document.getElementById("onboarding-error-text");
 
-// ===== DATA từ Blade =====
+// ===== DATA from Blade =====
 var initialStep = parseInt((_stepsEl$dataset$init = stepsEl.dataset.initialStep) !== null && _stepsEl$dataset$init !== void 0 ? _stepsEl$dataset$init : "0");
 var isOnboarded = stepsEl.dataset.isOnboarded === "1";
 var walletAddress = stepsEl.dataset.walletAddress;
@@ -17553,76 +17693,52 @@ var builderAddress = (_document$querySelect = document.querySelector('meta[name=
 
 // ===== INIT =====
 window.addEventListener("load", function () {
-  // Nếu đã onboarded redirect luôn
+  // If already onboarded, redirect immediately
   if (isOnboarded) {
     window.location.href = "/";
     return;
   }
 
-  // Highlight bước đã xong trước đó
+  // Highlight previously completed steps
   for (var i = 1; i <= initialStep; i++) {
     setStepState(i, "success");
   }
   btnStart.addEventListener("click", startOnboarding);
   btnRetry.addEventListener("click", startOnboarding);
 });
-
 // ===== START ONBOARDING =====
 function startOnboarding() {
   return _startOnboarding.apply(this, arguments);
-}
+} // ===== SHOW APT DEPOSIT PROMPT =====
 function _startOnboarding() {
   _startOnboarding = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
-    var i, _t;
+    var _t;
     return _regenerator().w(function (_context) {
       while (1) switch (_context.p = _context.n) {
         case 0:
           btnStart.disabled = true;
           btnRetry.classList.add("d-none");
           errorText.classList.add("d-none");
-          errorText.textContent = "";
-
-          // Reset step chưa xong về pending
-          for (i = initialStep + 1; i <= 3; i++) {
-            setStepState(i, "pending");
-          }
-          console.log("walletAddress:", walletAddress);
-          console.log("builderAddress:", builderAddress);
-          console.log("initialStep:", initialStep);
-          console.log(document.getElementById("onboarding-steps").dataset);
           _context.p = 1;
           _context.n = 2;
           return (0,_decibel_onboarding_js__WEBPACK_IMPORTED_MODULE_0__.runOnboarding)({
-            walletAddress: walletAddress,
             builderAddress: builderAddress,
             onStep: function onStep(_ref) {
               var step = _ref.step,
                 state = _ref.state,
                 message = _ref.message;
-              // ← destructure object
               statusText.textContent = message;
               if (step === 0) return;
               setStepState(step, state);
             },
-            onSuccess: function onSuccess() {
-              var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-                subaccountAddress = _ref2.subaccountAddress,
-                txHashes = _ref2.txHashes;
-              for (var _i = 1; _i <= 3; _i++) {
-                setStepState(_i, "success");
-              }
-              statusText.textContent = "✅ Thiết lập hoàn tất! Đang chuyển hướng...";
-              btnStart.classList.add("d-none");
-              console.log("Subaccount:", subaccountAddress);
-              console.log("Transactions:", txHashes);
-              setTimeout(function () {
-                window.location.href = "/";
-              }, 1500);
+            // PAUSE — show APT deposit prompt
+            onWaitForGas: function onWaitForGas(botAddress) {
+              showWaitForGas(botAddress);
             },
             onError: function onError(err) {
               errorText.textContent = err.message;
               errorText.classList.remove("d-none");
-              statusText.textContent = "Đã xảy ra lỗi. Vui lòng thử lại.";
+              statusText.textContent = "An error has occurred. Please try again.";
               btnStart.disabled = false;
               btnRetry.classList.remove("d-none");
             }
@@ -17639,6 +17755,148 @@ function _startOnboarding() {
     }, _callee, null, [[1, 3]]);
   }));
   return _startOnboarding.apply(this, arguments);
+}
+function showWaitForGas(botAddress) {
+  statusText.innerHTML = "\n        \u2705 Bot wallet has been created!<br><br>\n        <strong>\u26A0\uFE0F Next step:</strong> Deposit at least <strong>0.5 APT</strong> \n        to the following address so the bot has transaction fees:<br><br>\n        <code>".concat(botAddress, "</code>\n        <button class=\"btn btn-sm btn-outline-secondary ms-2\" \n                onclick=\"navigator.clipboard.writeText('").concat(botAddress, "')\">Copy</button>\n    ");
+
+  // Hide start button, show confirm button
+  btnStart.classList.add("d-none");
+  var btnConfirm = document.getElementById("btn-confirm-gas");
+  btnConfirm.classList.remove("d-none");
+  btnConfirm.onclick = function () {
+    return checkGasAndContinue(botAddress);
+  };
+}
+
+// ===== CHECK APT AND CONTINUE =====
+function checkGasAndContinue(_x) {
+  return _checkGasAndContinue.apply(this, arguments);
+} // ===== CHECK APT BALANCE =====
+function _checkGasAndContinue() {
+  _checkGasAndContinue = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(botAddress) {
+    var btnConfirm, apt, _t2;
+    return _regenerator().w(function (_context3) {
+      while (1) switch (_context3.p = _context3.n) {
+        case 0:
+          btnConfirm = document.getElementById("btn-confirm-gas");
+          btnConfirm.disabled = true;
+          btnConfirm.textContent = "Checking...";
+          _context3.p = 1;
+          _context3.n = 2;
+          return checkBotAptBalance(botAddress);
+        case 2:
+          apt = _context3.v;
+          console.log("Bot APT balance:", apt);
+          if (!(parseFloat(apt) < 0.1)) {
+            _context3.n = 3;
+            break;
+          }
+          alert("The bot wallet currently has ".concat(apt, " APT \u2014 not enough. Please deposit more."));
+          btnConfirm.disabled = false;
+          btnConfirm.textContent = "I've already deposited APT";
+          return _context3.a(2);
+        case 3:
+          // Enough APT → continue
+          btnConfirm.classList.add("d-none");
+          statusText.textContent = "Continuing setup...";
+          _context3.n = 4;
+          return (0,_decibel_onboarding_js__WEBPACK_IMPORTED_MODULE_0__.continueOnboarding)({
+            builderAddress: builderAddress,
+            onStep: function onStep(_ref2) {
+              var step = _ref2.step,
+                state = _ref2.state,
+                message = _ref2.message;
+              statusText.textContent = message;
+              if (step === 0) return;
+              setStepState(step, state);
+            },
+            onSuccess: function () {
+              var _onSuccess = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
+                var i;
+                return _regenerator().w(function (_context2) {
+                  while (1) switch (_context2.n) {
+                    case 0:
+                      for (i = 1; i <= 3; i++) setStepState(i, "success");
+                      statusText.textContent = "✅ Setup complete! Redirecting...";
+                      setTimeout(function () {
+                        return window.location.href = "/";
+                      }, 1500);
+                    case 1:
+                      return _context2.a(2);
+                  }
+                }, _callee2);
+              }));
+              function onSuccess() {
+                return _onSuccess.apply(this, arguments);
+              }
+              return onSuccess;
+            }(),
+            onError: function onError(err) {
+              errorText.textContent = err.message;
+              errorText.classList.remove("d-none");
+              statusText.textContent = "An error has occurred. Please try again.";
+              btnConfirm.disabled = false;
+              btnConfirm.textContent = "Try again";
+              btnConfirm.classList.remove("d-none");
+            }
+          });
+        case 4:
+          _context3.n = 6;
+          break;
+        case 5:
+          _context3.p = 5;
+          _t2 = _context3.v;
+          alert("Error: " + _t2.message);
+          btnConfirm.disabled = false;
+          btnConfirm.textContent = "I've already deposited APT";
+        case 6:
+          return _context3.a(2);
+      }
+    }, _callee3, null, [[1, 5]]);
+  }));
+  return _checkGasAndContinue.apply(this, arguments);
+}
+function checkBotAptBalance(_x2) {
+  return _checkBotAptBalance.apply(this, arguments);
+} // ===== SET STEP STATE =====
+function _checkBotAptBalance() {
+  _checkBotAptBalance = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4(botAddress) {
+    var _data$, res, data, balance, _t3;
+    return _regenerator().w(function (_context4) {
+      while (1) switch (_context4.p = _context4.n) {
+        case 0:
+          _context4.p = 0;
+          console.log("Checking address:", botAddress);
+          _context4.n = 1;
+          return fetch("https://api.mainnet.aptoslabs.com/v1/view", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              "function": "0x1::coin::balance",
+              type_arguments: ["0x1::aptos_coin::AptosCoin"],
+              arguments: [botAddress]
+            })
+          });
+        case 1:
+          res = _context4.v;
+          _context4.n = 2;
+          return res.json();
+        case 2:
+          data = _context4.v;
+          console.log("Balance response:", data);
+          balance = (((_data$ = data === null || data === void 0 ? void 0 : data[0]) !== null && _data$ !== void 0 ? _data$ : 0) / 1e8).toFixed(4);
+          console.log("APT balance:", balance);
+          return _context4.a(2, balance);
+        case 3:
+          _context4.p = 3;
+          _t3 = _context4.v;
+          return _context4.a(2, "0.0000");
+      }
+    }, _callee4, null, [[0, 3]]);
+  }));
+  return _checkBotAptBalance.apply(this, arguments);
 }
 function setStepState(step, state) {
   var icon = document.getElementById("step-icon-".concat(step));
@@ -17663,21 +17921,21 @@ function setStepState(step, state) {
     case "loading":
       icon.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div>';
       label.classList.add("text-primary", "fw-semibold");
-      status.textContent = "đang xử lý...";
+      status.textContent = "processing...";
       status.className = "small text-primary";
       item.classList.add("border-primary");
       break;
     case "success":
       icon.innerHTML = '<i class="fi fi-rr-check-circle text-success"></i>';
       label.classList.add("text-success", "fw-semibold");
-      status.textContent = "hoàn tất";
+      status.textContent = "completed";
       status.className = "small text-success";
       item.classList.add("border-success");
       break;
     case "error":
       icon.innerHTML = '<i class="fi fi-rr-cross-circle text-danger"></i>';
       label.classList.add("text-danger");
-      status.textContent = "lỗi";
+      status.textContent = "error";
       status.className = "small text-danger";
       item.classList.add("border-danger");
       break;

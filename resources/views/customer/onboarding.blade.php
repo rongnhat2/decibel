@@ -8,9 +8,9 @@
         <div class="card border-0 shadow-sm">
             <div class="card-body p-4 p-md-5">
                 <div class="mb-4">
-                    <h4 class="mb-1">Thiet lap tai khoan</h4>
+                    <h4 class="mb-1">Account Setup</h4>
                     <p class="text-body mb-0">
-                        Can 3 buoc xac nhan tren Petra wallet de hoan tat onboarding.
+                        Complete 3 confirmations in Petra wallet to finish onboarding.
                     </p>
                 </div>
 
@@ -24,10 +24,13 @@
                             <span class="step-icon text-muted" id="step-icon-1">
                                 <i class="fi fi-rr-circle"></i>
                             </span>
-                            <span class="step-label text-secondary" id="step-label-1">Buoc 1: Tao Trading Account</span>
+                            <span class="step-label text-secondary" id="step-label-1">Step 1: Create Trading Account</span>
                         </div>
                         <div class="small text-muted" id="step-status-1">pending</div>
                     </div>
+                    <button id="btn-confirm-gas" class="btn btn-success d-none">
+                        Tôi đã nạp APT ✓
+                    </button>
 
                     <div class="d-flex align-items-center justify-content-between p-3 rounded border step-item"
                         data-step="2">
@@ -35,7 +38,7 @@
                             <span class="step-icon text-muted" id="step-icon-2">
                                 <i class="fi fi-rr-circle"></i>
                             </span>
-                            <span class="step-label text-secondary" id="step-label-2">Buoc 2: Approve Builder Fee</span>
+                            <span class="step-label text-secondary" id="step-label-2">Step 2: Approve Builder Fee</span>
                         </div>
                         <div class="small text-muted" id="step-status-2">pending</div>
                     </div>
@@ -46,8 +49,7 @@
                             <span class="step-icon text-muted" id="step-icon-3">
                                 <i class="fi fi-rr-circle"></i>
                             </span>
-                            <span class="step-label text-secondary" id="step-label-3">Buoc 3: Uy quyen Bot
-                                Trading</span>
+                            <span class="step-label text-secondary" id="step-label-3">Step 3: Authorize Bot Trading</span>
                         </div>
                         <div class="small text-muted" id="step-status-3">pending</div>
                     </div>
@@ -55,15 +57,15 @@
 
                 <div class="d-flex gap-2">
                     <button id="btn-start-onboarding" class="btn btn-primary">
-                        Bat dau thiet lap
+                        Start Onboarding
                     </button>
                     <button id="btn-retry-onboarding" class="btn btn-outline-danger d-none">
-                        Thu lai
+                        Retry
                     </button>
                 </div>
 
                 <p class="mt-3 mb-1 text-body" id="onboarding-status-text">
-                    San sang bat dau onboarding.
+                    Ready to start onboarding.
                 </p>
                 <p class="mb-0 text-danger d-none" id="onboarding-error-text"></p>
             </div>

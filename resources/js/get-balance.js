@@ -10,6 +10,9 @@ window.addEventListener("load", async () => {
     document.getElementById("wallet-address-detail").textContent =
         `${fullAddr.slice(0, 6)}...${fullAddr.slice(-6)}`;
     document.getElementById("apt-balance").textContent = apt + " APT";
+    document.getElementById("wallet-address-detail").textContent =
+        `${fullAddr.slice(0, 6)}...${fullAddr.slice(-6)}`;
+    document.getElementById("wallet-address-board").textContent = fullAddr;
 });
 
 // ===== LẤY APT BALANCE =====

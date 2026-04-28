@@ -33,3 +33,8 @@ Route::get('/logout', function () {
 Route::get('/onboarding', 'Customer\DisplayController@onboarding')
     ->name('customer.onboarding')
     ->middleware('auth.wallet');
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('/account/credentials',    'Customer\AccountController@credentials');
+    Route::post('/account/regenerate-credentials', 'Customer\AccountController@regenerateCredentials');
+});

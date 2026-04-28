@@ -18,6 +18,9 @@ class Wallet extends Model
         'onboarding_step',  // ← thêm
         'is_onboarded',     // ← thêm
         'tx_hashes',        // ← thêm
+        'api_key',          // ← thêm
+        'secret_key',       // ← thêm
+        'secret_plain',     // ← thêm
     ];
 
     public function user()

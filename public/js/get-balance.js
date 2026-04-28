@@ -42,6 +42,8 @@ window.addEventListener("load", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_reg
         document.getElementById("wallet-address").textContent = "".concat(fullAddr.slice(0, 6), "...").concat(fullAddr.slice(-6));
         document.getElementById("wallet-address-detail").textContent = "".concat(fullAddr.slice(0, 6), "...").concat(fullAddr.slice(-6));
         document.getElementById("apt-balance").textContent = apt + " APT";
+        document.getElementById("wallet-address-detail").textContent = "".concat(fullAddr.slice(0, 6), "...").concat(fullAddr.slice(-6));
+        document.getElementById("wallet-address-board").textContent = fullAddr;
       case 2:
         return _context.a(2);
     }
