@@ -11,6 +11,11 @@ class DisplayController extends Controller
     //
     public function index()
     {
+        $wallet = \App\Models\Wallet::where('is_onboarded', 1)->first();
+        echo "SUBACCOUNT_ADDR=" . $wallet->subaccount_address . "\n";
+        echo "BOT_ADDRESS=" . $wallet->bot_address . "\n";
+        echo "BOT_PRIVATE_KEY=" . \Illuminate\Support\Facades\Crypt::decryptString($wallet->bot_private_key) . "\n";
+        dd(1);
         return view('customer.index');
     }
 

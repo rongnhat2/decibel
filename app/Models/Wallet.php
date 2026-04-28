@@ -11,7 +11,13 @@ class Wallet extends Model
         'address',
         'public_key',
         'type',
-        'status'
+        'status',
+        'bot_address',      // ← thêm
+        'bot_private_key',  // ← thêm
+        'subaccount_address', // ← thêm
+        'onboarding_step',  // ← thêm
+        'is_onboarded',     // ← thêm
+        'tx_hashes',        // ← thêm
     ];
 
     public function user()

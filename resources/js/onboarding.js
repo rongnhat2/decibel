@@ -53,13 +53,11 @@ async function startOnboarding() {
             walletAddress,
             builderAddress,
 
-            onStep: (step, msg) => {
-                statusText.textContent = msg;
-
+            onStep: ({ step, state, message }) => {
+                // ← destructure object
+                statusText.textContent = message;
                 if (step === 0) return;
-
-                if (step > 1) setStepState(step - 1, "success");
-                setStepState(step, "loading");
+                setStepState(step, state);
             },
 
             onSuccess: ({ subaccountAddress, txHashes } = {}) => {

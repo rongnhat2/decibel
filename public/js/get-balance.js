@@ -47,36 +47,31 @@ window.addEventListener("load", /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_reg
     }
   }, _callee);
 })));
+
 // ===== LẤY APT BALANCE =====
 function getAptBalance(_x) {
   return _getAptBalance.apply(this, arguments);
 }
 function _getAptBalance() {
   _getAptBalance = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2(address) {
-    var _balData$, url, res, data, balRes, balData, octas, _t;
+    var _balData$, baseUrl, accountRes, balRes, balData, octas, _t;
     return _regenerator().w(function (_context2) {
       while (1) switch (_context2.p = _context2.n) {
         case 0:
           _context2.p = 0;
-          // Thử cách mới — dùng account balance API
-          url = "https://fullnode.testnet.aptoslabs.com/v1/accounts/".concat(address);
+          baseUrl = "https://fullnode.mainnet.aptoslabs.com/v1"; // Kiểm tra account tồn tại
           _context2.n = 1;
-          return fetch(url);
+          return fetch("".concat(baseUrl, "/accounts/").concat(address));
         case 1:
-          res = _context2.v;
-          _context2.n = 2;
-          return res.json();
-        case 2:
-          data = _context2.v;
-          console.log("Account data:", data);
-          if (!(res.status === 404)) {
-            _context2.n = 3;
+          accountRes = _context2.v;
+          if (!(accountRes.status === 404)) {
+            _context2.n = 2;
             break;
           }
           return _context2.a(2, "0.0000");
-        case 3:
-          _context2.n = 4;
-          return fetch("https://fullnode.testnet.aptoslabs.com/v1/view", {
+        case 2:
+          _context2.n = 3;
+          return fetch("".concat(baseUrl, "/view"), {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
@@ -87,15 +82,20 @@ function _getAptBalance() {
               arguments: [address]
             })
           });
-        case 4:
+        case 3:
           balRes = _context2.v;
+          if (balRes.ok) {
+            _context2.n = 4;
+            break;
+          }
+          throw new Error("HTTP ".concat(balRes.status));
+        case 4:
           _context2.n = 5;
           return balRes.json();
         case 5:
           balData = _context2.v;
-          console.log("Balance data:", balData);
-          octas = (_balData$ = balData === null || balData === void 0 ? void 0 : balData[0]) !== null && _balData$ !== void 0 ? _balData$ : 0;
-          return _context2.a(2, (octas / 1e8).toFixed(4));
+          octas = BigInt((_balData$ = balData === null || balData === void 0 ? void 0 : balData[0]) !== null && _balData$ !== void 0 ? _balData$ : "0");
+          return _context2.a(2, (Number(octas) / 1e8).toFixed(4));
         case 6:
           _context2.p = 6;
           _t = _context2.v;

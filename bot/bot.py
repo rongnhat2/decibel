@@ -213,8 +213,8 @@ MAX_POSITION         = float(os.getenv("MAX_POSITION", "1.0"))
 INVENTORY_HOLD_MS    = int(os.getenv("INVENTORY_HOLD_MS", "1500"))
 MAX_INVENTORY_AGE_MS = int(os.getenv("MAX_INVENTORY_AGE_MS", "5000"))
 PARTIAL_FLATTEN      = float(os.getenv("PARTIAL_FLATTEN_RATIO", "0.7"))
-MAX_ORDER_AGE_MS     = int(os.getenv("MAX_ORDER_AGE_MS", "800"))
-COOLDOWN_MS          = int(os.getenv("COOLDOWN_MS", "500"))
+MAX_ORDER_AGE_MS     = int(os.getenv("MAX_ORDER_AGE_MS", "30000"))
+COOLDOWN_MS          = int(os.getenv("COOLDOWN_MS", "2000"))
 LOG_INTERVAL_S       = int(os.getenv("LOG_INTERVAL_S", "60"))
 
 # ─────────────────────────────────────────────────────────────
@@ -318,40 +318,65 @@ async def run_setup():
             print(f"  TX failed: {e}")
             return None
 
-    # Step 1 — tạo sub-account
-    print("\nStep 1/3 — Tạo sub-account...")
-    h = await tx(f"{net['package']}::dex_accounts_entry::create_new_subaccount")
-    if not h:
-        sys.exit(1)
+    # Step 1 — tạo sub-account qua redeem endpoint (không cần UI)
+    print("\nStep 1/3 — Tạo sub-account qua builder code...")
 
-    # Parse sub-account address từ tx events / changes
+    # Check xem đã có sub-account chưa
     subaccount = None
-    try:
-        info = await client.transaction_by_hash(h)
-        master_low = addr.lower()
-        for event in info.get("events", []):
-            if "subaccount" in event.get("type", "").lower():
-                for key in ("subaccount", "subaccount_addr", "account", "address"):
-                    a = event.get("data", {}).get(key, "")
-                    if a and a.lower() != master_low and _valid_addr(a):
-                        subaccount = _norm_addr(a)
-                        break
-            if subaccount:
-                break
-        if not subaccount:
-            for ch in info.get("changes", []):
-                if ch.get("type") != "write_resource":
-                    continue
-                rtype = ch.get("data", {}).get("type", "").lower()
-                a = ch.get("address", "").lower()
-                if "subaccount" in rtype and a != master_low and _valid_addr(a):
-                    subaccount = _norm_addr(a)
-                    break
-    except Exception as e:
-        print(f"  WARN: parse subaccount address failed — {e}")
+    import aiohttp as _aiohttp
+    api_hdrs = _api_headers()
+    async with _aiohttp.ClientSession() as _s:
+        async with _s.get(
+            f"{net['api']}/api/v1/subaccounts",
+            params={"owner": addr},
+            headers=api_hdrs
+        ) as _r:
+            if _r.status == 200:
+                subs = await _r.json(content_type=None)
+                if isinstance(subs, list) and subs:
+                    primary = next((s for s in subs if s.get("is_primary")), subs[0])
+                    subaccount = primary.get("subaccount_address")
+                    print(f"  ✓ Sub-account đã tồn tại: {subaccount}")
+
+    # Nếu chưa có → redeem builder code
+    if not subaccount:
+        builder_code = os.getenv("BUILDER_CODE", "")
+        if not builder_code:
+            print("ERROR: Chưa có BUILDER_CODE trong .env")
+            print("  Thêm BUILDER_CODE=424SAN vào .env rồi chạy lại")
+            sys.exit(1)
+
+        async with _aiohttp.ClientSession() as _s:
+            async with _s.post(
+                f"{net['api']}/api/v1/referrals/redeem",
+                json={"referral_code": builder_code, "account": addr},
+                headers={**api_hdrs, "Content-Type": "application/json"}
+            ) as _r:
+                if _r.status in (200, 201):
+                    data = await _r.json(content_type=None)
+                    print(f"  ✓ Redeemed builder code")
+                elif _r.status == 409:
+                    print(f"  ✓ Account đã được onboard trước đó (409)")
+                else:
+                    txt = await _r.text()
+                    print(f"  FAILED: Redeem lỗi {_r.status}: {txt}")
+                    sys.exit(1)
+
+        # Lấy sub-account sau khi redeem
+        async with _aiohttp.ClientSession() as _s:
+            async with _s.get(
+                f"{net['api']}/api/v1/subaccounts",
+                params={"owner": addr},
+                headers=api_hdrs
+            ) as _r:
+                if _r.status == 200:
+                    subs = await _r.json(content_type=None)
+                    if isinstance(subs, list) and subs:
+                        primary = next((s for s in subs if s.get("is_primary")), subs[0])
+                        subaccount = primary.get("subaccount_address")
 
     if not subaccount:
-        print("ERROR: Không parse được subaccount address từ tx.")
+        print("ERROR: Không lấy được subaccount address sau redeem.")
         sys.exit(1)
 
     print(f"  ✓ Sub-account : {subaccount}")
@@ -553,7 +578,7 @@ class Bot:
             self.stats.errors += 1
             return None
 
-    async def _place(self, price, size, buy, tif=0, reduce=False, cid=None):
+    async def _place(self, price, size, buy, tif=1, reduce=False, cid=None):
         cid = cid or uuid.uuid4().hex[:20]
         cp = _p2c(_round_price(price, self.mkt), self.mkt["px_dec"])
         cs = _s2c(_round_size(size,  self.mkt), self.mkt["sz_dec"])
@@ -691,13 +716,13 @@ class Bot:
         has_ask = any(not o.buy for o in self.orders.values())
 
         if not has_bid:
-            _, cid = await self._place(bid, size, True, tif=0)
+            _, cid = await self._place(bid, size, True, tif=1)
             if cid:
                 self.orders[cid] = Order(cid=cid, oid="", buy=True,
                                          price=bid, size=size, placed=time.time())
 
         if not has_ask:
-            _, cid = await self._place(ask, size, False, tif=0)
+            _, cid = await self._place(ask, size, False, tif=1)
             if cid:
                 self.orders[cid] = Order(cid=cid, oid="", buy=False,
                                          price=ask, size=size, placed=time.time())
@@ -727,8 +752,14 @@ class Bot:
 
         extra_headers = {"Origin": "https://app.decibel.trade"}
 
+        # websockets >= 12: dùng additional_headers
+        # websockets < 12: dùng extra_headers
+        import websockets
+        ws_ver = tuple(int(x) for x in websockets.__version__.split(".")[:2])
+        header_key = "additional_headers" if ws_ver >= (12, 0) else "extra_headers"
+
         ws_kwargs = {
-            "additional_headers": extra_headers,
+            header_key: extra_headers,
             "subprotocols": ["decibel", DECIBEL_API_KEY] if DECIBEL_API_KEY else ["decibel"],
             "ping_interval": 25,
             "ping_timeout": 60,

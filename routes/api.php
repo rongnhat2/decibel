@@ -25,8 +25,8 @@ Route::middleware('auth.wallet')->group(function () {
     Route::POST('/onboard/complete', 'Customer\WalletController@getBalance')->name('onboard.complete');
     Route::POST('/account/info', 'Customer\WalletController@getBalance')->name('account.info');
 
-    Route::POST('/onboard/bot-key', 'Customer\OnboardingController@getBotKey')->name('onboard.bot-key');
-    Route::POST('/onboard/progress', 'Customer\OnboardingController@saveProgress')->name('onboard.progress');
+    Route::POST('/onboarding/bot-key', 'Customer\OnboardingController@getBotKey')->name('onboard.bot-key');
+    Route::POST('/onboarding/progress', 'Customer\OnboardingController@saveProgress')->name('onboard.progress');
 });
 
 // Route::middleware('auth:api')->group(function () {

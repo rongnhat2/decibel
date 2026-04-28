@@ -11,36 +11,40 @@ window.addEventListener("load", async () => {
         `${fullAddr.slice(0, 6)}...${fullAddr.slice(-6)}`;
     document.getElementById("apt-balance").textContent = apt + " APT";
 });
+
 // ===== LẤY APT BALANCE =====
 async function getAptBalance(address) {
     try {
-        // Thử cách mới — dùng account balance API
-        const url = `https://fullnode.testnet.aptoslabs.com/v1/accounts/${address}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        console.log("Account data:", data);
+        const baseUrl = "https://fullnode.mainnet.aptoslabs.com/v1";
 
-        if (res.status === 404) return "0.0000";
+        // Kiểm tra account tồn tại
+        const accountRes = await fetch(`${baseUrl}/accounts/${address}`);
 
-        // Thử lấy qua view function
-        const balRes = await fetch(
-            "https://fullnode.testnet.aptoslabs.com/v1/view",
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    function: "0x1::coin::balance",
-                    type_arguments: ["0x1::aptos_coin::AptosCoin"],
-                    arguments: [address],
-                }),
+        if (accountRes.status === 404) {
+            return "0.0000";
+        }
+
+        // Lấy balance
+        const balRes = await fetch(`${baseUrl}/view`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
             },
-        );
+            body: JSON.stringify({
+                function: "0x1::coin::balance",
+                type_arguments: ["0x1::aptos_coin::AptosCoin"],
+                arguments: [address],
+            }),
+        });
+
+        if (!balRes.ok) {
+            throw new Error(`HTTP ${balRes.status}`);
+        }
 
         const balData = await balRes.json();
-        console.log("Balance data:", balData);
+        const octas = BigInt(balData?.[0] ?? "0");
 
-        const octas = balData?.[0] ?? 0;
-        return (octas / 1e8).toFixed(4);
+        return (Number(octas) / 1e8).toFixed(4);
     } catch (err) {
         console.error("Balance error:", err);
         return "0.0000";

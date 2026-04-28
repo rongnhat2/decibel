@@ -21,7 +21,7 @@ class Wallets extends Migration
             $table->string('type')->default("petra");
 
             $table->string('bot_address')->nullable();
-            $table->string('bot_private_key')->nullable(); // lưu encrypted
+            $table->longtext('bot_private_key')->nullable(); // lưu encrypted
             $table->string('subaccount_address')->nullable();
             $table->integer('onboarding_step')->default(0); // 0,1,2,3
             $table->boolean('is_onboarded')->default(false);
